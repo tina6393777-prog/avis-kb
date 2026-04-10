@@ -811,12 +811,162 @@ body {
 .chip-green { background: #065f46; }
 .chip-blue { background: #1e40af; }
 
+/* ── EMOJI PICKER ── */
+.emoji-picker-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 1100;
+  align-items: center;
+  justify-content: center;
+}
+.emoji-picker-overlay.open { display: flex; }
+.emoji-picker-box {
+  background: #fff;
+  border-radius: 14px;
+  width: 360px;
+  max-height: 480px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.emoji-picker-header {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.emoji-picker-title { font-size: 14px; font-weight: 700; }
+.emoji-picker-close {
+  background: none; border: none; font-size: 18px;
+  cursor: pointer; color: var(--text-muted); line-height: 1;
+}
+.emoji-picker-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.emoji-picker-tab {
+  padding: 7px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: inherit;
+  transition: all .15s;
+}
+.emoji-picker-tab.active { color: var(--red); border-bottom-color: var(--red); }
+.emoji-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+  padding: 10px;
+  overflow-y: auto;
+  flex: 1;
+}
+.emoji-btn {
+  font-size: 22px;
+  padding: 6px;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .12s;
+  text-align: center;
+  line-height: 1;
+}
+.emoji-btn:hover { background: var(--bg); transform: scale(1.15); }
+
+/* cat edit row with icon button */
+.cat-icon-btn {
+  width: 40px;
+  height: 36px;
+  font-size: 18px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: all .15s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cat-icon-btn:hover { border-color: var(--red); background: var(--red-light); }
+.site-banner {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  min-height: 44px;
+}
+.site-banner-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+.site-banner-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.site-banner-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--red-light);
+  color: var(--red);
+  text-decoration: none;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 500;
+  border: 1px solid rgba(200,16,46,0.18);
+  transition: all .15s;
+}
+.site-banner-link:hover {
+  background: var(--red);
+  color: #fff;
+}
+.site-banner-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* inline link inside QA answer */
+.qa-a-content a {
+  color: var(--red);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 500;
+  transition: color .15s;
+}
+.qa-a-content a:hover { color: var(--red-dark); }
+
 @media (max-width: 768px) {
   .layout { grid-template-columns: 1fr; }
   .sidebar { display: none; }
   .main { padding: 20px 16px; }
   .admin-layout { grid-template-columns: 1fr; }
   .admin-sidebar { display: none; }
+  .site-banner { padding: 8px 16px; }
 }
 </style>
 </head>
@@ -844,6 +994,13 @@ body {
   </div>
 </div>
 
+<!-- SITE BANNER -->
+<div class="site-banner" id="site-banner" style="display:none">
+  <span class="site-banner-name" id="site-banner-name"></span>
+  <div class="site-banner-sep" id="site-banner-sep" style="display:none"></div>
+  <div class="site-banner-links" id="site-banner-links"></div>
+</div>
+
 <!-- MAIN LAYOUT -->
 <div class="layout">
   <!-- SIDEBAR -->
@@ -856,6 +1013,18 @@ body {
   <main class="main" id="main-content">
     <div id="content-area"></div>
   </main>
+</div>
+
+<!-- EMOJI PICKER MODAL -->
+<div class="emoji-picker-overlay" id="emoji-picker-overlay">
+  <div class="emoji-picker-box">
+    <div class="emoji-picker-header">
+      <span class="emoji-picker-title">選擇圖示</span>
+      <button class="emoji-picker-close" onclick="closeEmojiPicker()">×</button>
+    </div>
+    <div class="emoji-picker-tabs" id="emoji-tabs"></div>
+    <div class="emoji-picker-grid" id="emoji-grid"></div>
+  </div>
 </div>
 
 <!-- PASSWORD MODAL -->
@@ -887,6 +1056,7 @@ body {
       <div class="admin-tabs">
         <button class="admin-tab active" onclick="switchAdminTab('qa', this)">QA 管理</button>
         <button class="admin-tab" onclick="switchAdminTab('cat', this)">分類設定</button>
+        <button class="admin-tab" onclick="switchAdminTab('banner', this)">名稱列</button>
         <button class="admin-tab" onclick="switchAdminTab('marquee', this)">跑馬燈</button>
         <button class="admin-tab" onclick="switchAdminTab('data', this)">資料匯出入</button>
       </div>
@@ -906,6 +1076,28 @@ body {
           <div class="admin-section-title">分類設定</div>
         </div>
         <div id="cat-edit-list"></div>
+      </div>
+
+      <!-- Banner Tab -->
+      <div class="admin-tab-content" id="tab-banner">
+        <div class="admin-section-header">
+          <div class="admin-section-title">名稱列設定</div>
+        </div>
+        <div class="data-mgmt-section">
+          <div class="data-mgmt-title">網頁名稱</div>
+          <div class="data-mgmt-desc">顯示在導覽列下方的標題名稱，留空則不顯示名稱列。</div>
+          <div class="form-group">
+            <label class="form-label">名稱</label>
+            <input class="form-input" id="banner-name-input" placeholder="例：AVIS 艾維士 客服知識庫">
+          </div>
+        </div>
+        <div class="data-mgmt-section">
+          <div class="data-mgmt-title">快捷連結</div>
+          <div class="data-mgmt-desc">在名稱旁顯示的連結按鈕，可新增多個（例如：AST系統、常用表單等）。</div>
+          <div id="banner-links-list"></div>
+          <button class="btn-secondary" style="margin-top:10px;font-size:12px" onclick="addBannerLink()">＋ 新增連結</button>
+        </div>
+        <button class="btn-primary" onclick="saveBanner()">儲存名稱列</button>
       </div>
 
       <!-- Marquee Tab -->
@@ -1058,6 +1250,10 @@ async function init() {
 function getDefaultData() {
   return {
     marquee: '歡迎使用 AVIS 艾維士客服知識庫，如有任何問題請聯絡車管副理 吳富超 0963-553-560',
+    bannerName: 'AVIS 艾維士 客服知識庫',
+    bannerLinks: [
+      { label: 'AST 系統', url: 'https://ast.avis.com.tw' }
+    ],
     categories: [
       { id: 'c1', icon: '🚗', name: '代駕服務資訊' },
       { id: 'c2', icon: '💰', name: '費用與價格表' },
@@ -1130,6 +1326,7 @@ function getDefaultData() {
 // ─── RENDER ───────────────────────────────────────────────────────────────────
 function renderAll() {
   renderMarquee();
+  renderBanner();
   renderSidebar();
   if (db.categories.length > 0) {
     selectCategory(db.categories[0].id);
@@ -1145,6 +1342,28 @@ function renderMarquee() {
   } else {
     bar.style.display = 'none';
   }
+}
+
+function renderBanner() {
+  const banner = document.getElementById('site-banner');
+  const nameEl = document.getElementById('site-banner-name');
+  const sep = document.getElementById('site-banner-sep');
+  const linksEl = document.getElementById('site-banner-links');
+
+  const name = db.bannerName || '';
+  const links = db.bannerLinks || [];
+
+  if (!name && links.length === 0) {
+    banner.style.display = 'none';
+    return;
+  }
+
+  banner.style.display = 'flex';
+  nameEl.textContent = name;
+  sep.style.display = (name && links.length > 0) ? 'block' : 'none';
+  linksEl.innerHTML = links.map(l =>
+    '<a class="site-banner-link" href="' + l.url + '" target="_blank" rel="noopener">🔗 ' + l.label + '</a>'
+  ).join('');
 }
 
 function renderSidebar() {
@@ -1261,6 +1480,68 @@ function convertDriveUrl(url) {
   return url;
 }
 
+// ─── EMOJI PICKER ─────────────────────────────────────────────────────────────
+const EMOJI_CATS = [
+  { label: '常用', emojis: ['📁','📂','🗂','📋','📌','📍','🏷','🔖','📎','🗒','📝','✏️','🖊','📊','📈','📉','🗃','🗄','💼','👜'] },
+  { label: '交通', emojis: ['🚗','🚕','🚙','🚌','🚎','🏎','🚓','🚑','🚒','🛻','🚐','🚚','🚛','🚜','🛵','🏍','✈️','🚁','🚢','🚆','🚇','🚉','🏍','🛞','⛽','🔧','🔩','⚙️','🛠','🔑'] },
+  { label: '工作', emojis: ['💼','👔','🖥','💻','⌨️','🖱','📱','☎️','📞','📟','📠','🖨','💡','🔦','🔋','🔌','📡','🖨','📠','📺','📷','📸','🎥','📹','📼','🔭','🔬','🧪','🧫','🧬'] },
+  { label: '資訊', emojis: ['ℹ️','❓','❗','⚠️','🚨','🔔','🔕','📢','📣','🔊','💬','💭','🗣','👥','👤','🧑‍💼','👨‍💼','👩‍💼','🧑‍🔧','👨‍🔧','🎓','📚','📖','📗','📘','📙','📕','📓','📒','📃'] },
+  { label: '錢財', emojis: ['💰','💴','💵','💶','💷','💸','💳','🏧','💎','🏆','🥇','🎖','🏅','🎗','🎫','🎟','🎪','🎨','🎭','🎬','🎤','🎧','🎵','🎶','🎸','🎹','🎺','🎻','🪘','🥁'] },
+  { label: '狀態', emojis: ['✅','❌','⭕','🔴','🟠','🟡','🟢','🔵','🟣','⚫','⚪','🟤','🔶','🔷','🔸','🔹','🔺','🔻','💠','🔘','🔲','🔳','▪️','▫️','◾','◽','◼️','◻️','🔱','⚜️'] },
+  { label: '其他', emojis: ['🌟','⭐','💫','✨','🌈','🌙','☀️','⛅','🌤','🌦','🌧','⛈','🌩','❄️','☃️','🌊','🌸','🌺','🌻','🌹','🌷','🍀','🌿','🌱','🌲','🌳','🎋','🎍','🍁','🎄'] }
+];
+
+let _emojiCallback = null;
+let _emojiEditCatIdx = null;
+let _emojiTabIdx = 0;
+
+function openEmojiPicker(catIdx, callback) {
+  _emojiEditCatIdx = catIdx;
+  _emojiCallback = callback;
+  _emojiTabIdx = 0;
+  renderEmojiTabs();
+  renderEmojiGrid(0);
+  document.getElementById('emoji-picker-overlay').classList.add('open');
+}
+
+function closeEmojiPicker() {
+  document.getElementById('emoji-picker-overlay').classList.remove('open');
+  _emojiCallback = null;
+  _emojiEditCatIdx = null;
+}
+
+function renderEmojiTabs() {
+  const tabs = document.getElementById('emoji-tabs');
+  tabs.innerHTML = EMOJI_CATS.map((c, i) =>
+    '<button class="emoji-picker-tab' + (i === _emojiTabIdx ? ' active' : '') + '" onclick="switchEmojiTab(' + i + ')">' + c.label + '</button>'
+  ).join('');
+}
+
+function switchEmojiTab(i) {
+  _emojiTabIdx = i;
+  renderEmojiTabs();
+  renderEmojiGrid(i);
+}
+
+function renderEmojiGrid(i) {
+  const grid = document.getElementById('emoji-grid');
+  grid.innerHTML = EMOJI_CATS[i].emojis.map(e =>
+    '<button class="emoji-btn" onclick="selectEmoji(\'' + e + '\')">' + e + '</button>'
+  ).join('');
+}
+
+function selectEmoji(emoji) {
+  closeEmojiPicker();
+  if (_emojiCallback) {
+    _emojiCallback(emoji);
+    return;
+  }
+  if (_emojiEditCatIdx !== null) {
+    updateCat(_emojiEditCatIdx, 'icon', emoji);
+    renderCatEditList();
+  }
+}
+
 // ─── SEARCH ───────────────────────────────────────────────────────────────────
 const searchInput = document.getElementById('search-input');
 const searchPanel = document.getElementById('search-results-panel');
@@ -1332,6 +1613,8 @@ function openAdmin() {
   renderAdminCatList();
   if (db.categories.length > 0) selectAdminCat(db.categories[0].id);
   document.getElementById('marquee-input').value = db.marquee || '';
+  document.getElementById('banner-name-input').value = db.bannerName || '';
+  renderBannerLinksList();
 }
 
 function exitAdmin() {
@@ -1369,21 +1652,22 @@ function selectAdminCat(catId) {
 }
 
 function addCategory() {
-  const name = prompt('請輸入新分類名稱：');
-  if (!name || !name.trim()) return;
-  const icon = prompt('請輸入分類圖示（emoji）：', '📁') || '📁';
-  const newCat = { id: 'c' + Date.now(), icon: icon.trim(), name: name.trim() };
-  db.categories.push(newCat);
-  saveToLocal();
-  renderAdminCatList();
-  selectAdminCat(newCat.id);
+  openEmojiPicker(null, function(icon) {
+    const name = prompt('請輸入新分類名稱：');
+    if (!name || !name.trim()) return;
+    const newCat = { id: 'c' + Date.now(), icon: icon, name: name.trim() };
+    db.categories.push(newCat);
+    saveToLocal();
+    renderAdminCatList();
+    selectAdminCat(newCat.id);
+  });
 }
 
 function renderCatEditList() {
   const list = document.getElementById('cat-edit-list');
   list.innerHTML = db.categories.map((cat, i) => {
     return '<div class="admin-cat-edit-row">' +
-      '<input class="cat-edit-input" style="max-width:60px" value="' + (cat.icon || '📁') + '" onchange="updateCat(' + i + ', \'icon\', this.value)">' +
+      '<button class="cat-icon-btn" onclick="openEmojiPicker(' + i + ', null)" title="點擊換圖示">' + (cat.icon || '📁') + '</button>' +
       '<input class="cat-edit-input" value="' + cat.name + '" onchange="updateCat(' + i + ', \'name\', this.value)">' +
       '<button class="btn-move" onclick="moveCat(' + i + ', -1)" ' + (i===0?'disabled':'') + '>↑</button>' +
       '<button class="btn-move" onclick="moveCat(' + i + ', 1)" ' + (i===db.categories.length-1?'disabled':'') + '>↓</button>' +
@@ -1538,6 +1822,42 @@ function deleteQA(globalIdx) {
   renderAdminQAList();
   renderAdminCatList();
   showToast('🗑 已刪除');
+}
+
+// ─── BANNER ───────────────────────────────────────────────────────────────────
+function renderBannerLinksList() {
+  const links = db.bannerLinks || [];
+  const list = document.getElementById('banner-links-list');
+  list.innerHTML = links.map((l, i) =>
+    '<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">' +
+      '<input class="form-input" style="flex:1" placeholder="連結名稱" value="' + l.label + '" oninput="updateBannerLink(' + i + ',\'label\',this.value)">' +
+      '<input class="form-input" style="flex:2" placeholder="https://..." value="' + l.url + '" oninput="updateBannerLink(' + i + ',\'url\',this.value)">' +
+      '<button class="btn-delete" onclick="deleteBannerLink(' + i + ')">✕</button>' +
+    '</div>'
+  ).join('');
+}
+
+function addBannerLink() {
+  if (!db.bannerLinks) db.bannerLinks = [];
+  db.bannerLinks.push({ label: '', url: '' });
+  renderBannerLinksList();
+}
+
+function updateBannerLink(i, field, val) {
+  db.bannerLinks[i][field] = val;
+}
+
+function deleteBannerLink(i) {
+  db.bannerLinks.splice(i, 1);
+  renderBannerLinksList();
+}
+
+function saveBanner() {
+  db.bannerName = document.getElementById('banner-name-input').value.trim();
+  db.bannerLinks = (db.bannerLinks || []).filter(l => l.label || l.url);
+  saveToLocal();
+  renderBanner();
+  showToast('✅ 名稱列已儲存');
 }
 
 // ─── MARQUEE ──────────────────────────────────────────────────────────────────

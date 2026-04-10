@@ -1,139 +1,400 @@
 {
   "marquee": "歡迎使用 AVIS 艾維士客服知識庫 ★ 車管副理 吳富超 0963-553-560 ★ 若需協助請電車管，若聯繫不上，請依序找車管副理協助處理",
   "categories": [
-    { "id": "c1", "icon": "🚗", "name": "代駕服務資訊" },
-    { "id": "c2", "icon": "💰", "name": "費用與價格表" },
-    { "id": "c3", "icon": "🔧", "name": "車輛異常處理" },
-    { "id": "c4", "icon": "💻", "name": "系統操作教學" },
-    { "id": "c5", "icon": "🎬", "name": "教育訓練影片" },
-    { "id": "c6", "icon": "📄", "name": "其他參考資料" }
+    {
+      "id": "c1775818318699",
+      "icon": "📁",
+      "name": "最新公告"
+    },
+    {
+      "id": "c1775818434181",
+      "icon": "📁",
+      "name": "公司基本介紹"
+    },
+    {
+      "id": "c1",
+      "icon": "🚗",
+      "name": "代駕服務資訊"
+    },
+    {
+      "id": "c2",
+      "icon": "💰",
+      "name": "費用與價格表"
+    },
+    {
+      "id": "c3",
+      "icon": "🔧",
+      "name": "車輛異常處理"
+    },
+    {
+      "id": "c4",
+      "icon": "💻",
+      "name": "系統操作教學"
+    },
+    {
+      "id": "c6",
+      "icon": "📄",
+      "name": "其他參考資料"
+    },
+    {
+      "id": "c5",
+      "icon": "🎬",
+      "name": "教育訓練影片"
+    },
+    {
+      "id": "c1775818810537",
+      "icon": "📁",
+      "name": "優惠情報"
+    }
   ],
   "items": [
     {
-      "id": "q1", "catId": "c1",
+      "id": "q1",
+      "catId": "c1",
       "q": "一般預定車輛需提前多少小時？",
       "a": "一般日預定時間為服務時間前 [[red:36 小時]]。\n\n三天（含）以上之連續假日，預定時間為服務時間前 [[red:120 小時]]，依行政院人事行政總處公告為主。\n\n農曆春節預定時間同樣為 [[red:120 小時]]，依行政院人事行政總處公告為主。",
-      "tag": { "color": "blue", "text": "預約規則" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "預約規則"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q2", "catId": "c1",
+      "id": "q2",
+      "catId": "c1",
       "q": "取消及退訂費用如何計算？",
       "a": "取消時間在服務時間前 [[green:4 小時以上]]：不收費\n\n取消費用（用車時間前 4 小時以內）：[[red:原車資 100%]]\n\n取消費用（用車時間前 2 小時以內）：[[red:原車資 100%]]\n\nNo Show 收費：[[red:全額]]",
-      "tag": { "color": "yellow", "text": "注意" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "yellow",
+        "text": "注意"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q3", "catId": "c1",
+      "id": "q3",
+      "catId": "c1",
       "q": "農曆節假日加費說明",
       "a": "農曆年節（除夕至初五）、元旦、清明、端午、中秋連假（依行政院人事行政總處公告日期），加費如下：\n\n機場接送 / 點到點：每趟次 [[red:650 元]]\n\n計時包車：[[red:租金 15%]]",
-      "tag": { "color": "red", "text": "重要" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "red",
+        "text": "重要"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q4", "catId": "c1",
+      "id": "q4",
+      "catId": "c1",
       "q": "緊急調度用費說明（4小時內新增訂單及異動）",
       "a": "4 小時內新增訂單及異動時間、上下車地點等，[[red:不接受服務前 2 小時異動服務時間、地點]]。\n\n如需異動，視原訂單取消，[[red:收取全額服務費用]]。\n\n緊急調度用費：[[red:350 元/單]]",
-      "tag": { "color": "red", "text": "重要" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "red",
+        "text": "重要"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q5", "catId": "c1",
+      "id": "q5",
+      "catId": "c1",
       "q": "送機（點到點）免費等候及 No Show 規則",
       "a": "免費等候時間：[[blue:15 分鐘]]\n\n最長等候時間（視為 No Show）：[[red:30 分鐘]]\n\n接機待機時間：[[blue:60 分鐘]]（以航班實際抵達時間 60 分鐘後開始計算，最多等候 1 小時）\n\n接機最長等候時間（視為 No Show）：[[red:60 分鐘]]",
-      "tag": { "color": "blue", "text": "等候規則" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "等候規則"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q6", "catId": "c2",
+      "id": "q6",
+      "catId": "c2",
       "q": "代駕價格區域如何劃分？（阿聯酋/散客）",
       "a": "■ [[blue:1 人乘車]]（Sedan L組 / People over K組）\n\n• Novotel & THSR：Novotel Taipei and Taiwan High Speed Rail\n• Zone 1：基隆、台北、新北、桃園、新竹（約 60 km）\n• Zone 2：宜蘭、苗栗、台中、彰化、南投（約 150 km） → K組客戶價 [[blue:2,000 NTD]] / L組客戶價另參價格表\n• Zone 3：雲林、嘉義、台南、高雄（約 250 km）→ K組客戶價 [[blue:5,000 NTD]]\n• Zone 4：花蓮、台東、屏東（約 300 km）→ K組客戶價 [[blue:5,600 NTD]]\n\n■ [[green:2 人以上共乘]]（two eligible passengers sharing a vehicle）\n\n• Zone 2：K組 [[green:1,000 NTD]]\n• Zone 3：K組 [[green:4,000 NTD]]\n• Zone 4：K組 [[green:4,600 NTD]]",
-      "tag": { "color": "blue", "text": "價格表" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "價格表"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q7", "catId": "c2",
+      "id": "q7",
+      "catId": "c2",
       "q": "額外等候費用（各車組別）",
       "a": "（機接或點到點）客戶要求司機報到後額外等候費用 / 小時：\n\nH 組：[[blue:450 元]]\nL 組：[[blue:650 元]]\nP 組：[[blue:850 元]]\nK 組：[[blue:650 元]]\nV 組：[[blue:750 元]]\nW 組：[[blue:1,100 元]]\n\n計時包車等候費用（另計）：\nH 組：[[blue:700 元]]\nL 組：[[blue:900 元]]\nP 組：[[blue:1,300 元]]\nK 組：[[blue:900 元]]\nV 組：[[blue:1,200 元]]\nW 組：[[blue:1,400 元]]",
-      "tag": { "color": "blue", "text": "費率" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "費率"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q8", "catId": "c2",
+      "id": "q8",
+      "catId": "c2",
       "q": "附加服務費用說明",
       "a": "兒童安全椅：[[blue:120 元/張]]\n\n客裝專屬車前條/趟：[[blue:50 元]]\n\n司兼導（計時包車限定）：[[blue:2,500 元]]\n\n英語駕駛/趟：[[blue:1,000 元]]\n\n日語駕駛/趟：[[blue:2,000 元]]\n\n夜間加成時段（預約時間 23:00 ～ 隔日 05:59am）：\n• 機場接送/點到點：[[blue:200 元/次]]\n• 計時包車：[[blue:車資 10%]]\n\n偏遠區加點：[[blue:250 元]]（限同縣市，偏遠地區另計）",
-      "tag": { "color": "blue", "text": "附加費用" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "附加費用"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q9", "catId": "c2",
+      "id": "q9",
+      "catId": "c2",
       "q": "發票統編及公司資訊",
       "a": "公司名稱：[[blue:安維斯汽車租賃股份有限公司]]\n\n統一編號：[[red:53799460]]\n\n地址：11086 台北市信義區松德路 257 號 1 樓\n\n服務電話：(02) 6620-6620\n\n服務專線：0800-600-601",
-      "tag": { "color": "blue", "text": "公司資訊" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "公司資訊"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q10", "catId": "c3",
+      "id": "q10",
+      "catId": "c3",
       "q": "客戶遇到雨刷或燈泡異常怎麼辦？",
       "a": "若客戶通知[[orange:雨刷、燈泡異常]]，考量安全性問題需更換時，[[red:可請客人至車麗屋進行更換]]。\n\n若客來電時車麗屋已休息，雖有安全性問題，仍提供門市資訊，[[orange:請客白日再自行聯繫處理]]。\n\n如有遇到，[[red:請客人費用部分先行墊付，發票打統編 53799460]]。\n\n備注：若需協助，請電車管；若聯繫不上，請依序找車管副理 吳富超 0963-553-560 協助處理。週日客戶需要更車至現場處理。",
-      "tag": { "color": "yellow", "text": "注意" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "yellow",
+        "text": "注意"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q11", "catId": "c3",
+      "id": "q11",
+      "catId": "c3",
       "q": "車輛需要拖吊時，保養廠如何分流？",
       "a": "[[red:新竹縣以北]]：一律先拖吊至指定保養廠（[[blue:台北聯騰]]，為表單中第一間廠商）\n\n[[green:新竹縣以南]]：拖吊至該縣市配合保養廠（指定保養廠派遣資料）\n\n⚠️ [[orange:車輛沒電需接電 → 聯繫保險公司即可，不須拖吊]]",
-      "tag": { "color": "red", "text": "重要" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "red",
+        "text": "重要"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q12", "catId": "c3",
+      "id": "q12",
+      "catId": "c3",
       "q": "保養廠聯絡窗口資訊（重點區域）",
       "a": "[[blue:台北區]]（優先）：聯騰汽車 / 捷博三重\n\n彰化：車麗屋金馬店（彰化縣彰化市金馬路二段 198 號）\n\n南投：車麗屋金馬店（彰化縣彰化市金馬路二段 198 號）\n\n嘉義：SUM 嘉義廠 / 車麗屋嘉義店（嘉義市東區興業東路 160 號）\n\n高雄：暐興輪胎 / 吉運汽車\n\n備注：車管副理 吳富超 0963-553-560",
-      "tag": { "color": "blue", "text": "聯絡窗口" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "聯絡窗口"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q13", "catId": "c4",
+      "id": "q13",
+      "catId": "c4",
       "q": "AST 系統如何查看服務軌跡？",
       "a": "【步驟一：進入訂單查詢頁面】\n1. 進入 AST 首頁後點選「訂單管理」\n2. 左側功能選擇「訂單查詢」\n3. 輸入欲查詢訂單編號\n4. 按下搜尋，即可帶出欲查詢訂單列\n\n【步驟二：查看服務軌跡】\n1. 在訂單列最右側點選「[[blue:服務軌跡]]」藍色按鈕\n2. 進入服務軌跡頁面（上方資料省略）\n3. 找到最下方一筆，點選「[[green:查看地址]]」\n4. 系統會跳轉至 Google Maps，即可判斷司機是否在欲接客人的範圍內",
-      "tag": { "color": "blue", "text": "系統教學" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "系統教學"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q14", "catId": "c5",
+      "id": "q14",
+      "catId": "c5",
       "q": "AVIS 教育訓練影片系列（請上傳至 Google Drive 後貼入連結）",
       "a": "共 4 支教育訓練影片（20260111 avis教育訓練 1~4）\n\n影片上傳方式：\n1. 將 MP4 檔案上傳至 Google Drive\n2. 右鍵點擊 → 取得連結 → 設定為「知道連結的人可檢視」\n3. 複製連結\n4. 至後台編輯此 QA → 貼入影片連結欄位 → 儲存\n\n目前影片連結尚未設定，請後台管理員完成上傳後更新。",
-      "tag": { "color": "purple", "text": "待更新" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "purple",
+        "text": "待更新"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q15", "catId": "c5",
+      "id": "q15",
+      "catId": "c5",
       "q": "司機監控與未見司機流程（影片教學）",
       "a": "說明司機監控系統操作，以及未見司機時的處理流程。\n\n請後台管理員將影片上傳至 Google Drive 後，至後台更新此 QA 的影片連結。",
-      "tag": { "color": "purple", "text": "待更新" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "purple",
+        "text": "待更新"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q16", "catId": "c5",
+      "id": "q16",
+      "catId": "c5",
       "q": "建單錯誤處理（影片教學）",
       "a": "說明建立訂單時常見錯誤的處理方式。\n\n請後台管理員將影片上傳至 Google Drive 後，至後台更新此 QA 的影片連結。",
-      "tag": { "color": "purple", "text": "待更新" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "purple",
+        "text": "待更新"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q17", "catId": "c6",
+      "id": "q17",
+      "catId": "c6",
       "q": "電子發票格式說明",
       "a": "AVIS 艾維士電子發票格式（114年11-12月為例）：\n\n發票號碼：UT-XXXXXXXX\n\n賣方統編：[[blue:53799460]]（安維斯汽車租賃股份有限公司）\n\n格式：25（電子發票）\n\n品名：租金\n\n計算方式：租金（未稅）+ 稅額（5%）= 總計\n\n例：3,429 + 171 = [[blue:3,600 元]]",
-      "tag": { "color": "blue", "text": "參考資料" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "參考資料"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
     },
     {
-      "id": "q18", "catId": "c6",
+      "id": "q18",
+      "catId": "c6",
       "q": "阿聯酋核對新增教學（媛婷）",
       "a": "阿聯酋相關核對作業說明，詳細步驟請參考 PPT 教學檔案。\n\n請後台管理員將 PPT 上傳至 Google Drive 後，於此 QA 新增相關連結或圖片。",
-      "tag": { "color": "blue", "text": "參考資料" },
-      "images": [], "videos": [], "links": []
+      "tag": {
+        "color": "blue",
+        "text": "參考資料"
+      },
+      "images": [],
+      "videos": [],
+      "links": []
+    },
+    {
+      "id": "q1775818574437",
+      "catId": "c1775818434181",
+      "q": "公司簡介",
+      "a": "安維斯汽車租賃股份有限公司\n24H 中/英客服專線\n國內撥打 0800-600-601　\n海外撥打 +886 2 6620-6620\n\n2012 年，台灣正式成為 AVIS 全球服務網絡中的第 175 個國家，中文名稱為「艾維士租車」，不但是台灣唯一的國際租車公司，也是台灣市場中唯一能提供跨國以及台海兩岸中、港、澳、台四地汽車租賃服務的國際租車品牌，AVIS 將把 70 年的汽車租賃服務經驗及品牌精神帶入台灣，成為市場的服務標竿。目前 AVIS 在台灣有多個長租、短租服務據點，為全台旅客提供高效便捷的汽車租賃服務。\n\nAVIS 是一家真正國際化的租車公司，在全球代表著汽車租賃業的頂尖水準，以不變的品牌精神及從不妥協的服務品質 ，在全球的 177 個國家與地區為我們的顧客提供租車服務。AVIS 秉持著 \"We Try Harder\" 的服務信念，並將此信念傳遞到全球各地，不同的國家，一樣的 AVIS，相同的服務精神，無論在哪裡，顧客都能享受到一貫的服務標準。AVIS 艾維士租車目前於台灣地區提供企業長租、國內短租、國外租車、司機接送等服務，只要撥打 AVIS 艾維士租車的客服專線 0800-600-601，您即可輕鬆預訂台灣地區甚至是全球各國的租車，以及 AVIS \"We Try Harder\" 的服務承諾。",
+      "tag": null,
+      "images": [
+        "https://www.avis-taiwan.com/"
+      ],
+      "videos": [],
+      "links": [
+        "https://www.avis-taiwan.com/about.php"
+      ]
+    },
+    {
+      "id": "q1775818729320",
+      "catId": "c1775818434181",
+      "q": "服務據點",
+      "a": "目前服務據點分 \n北台灣 \n中台灣\n南臺灣\n花東地區\n離島\n\n點選連結查詢服務地點",
+      "tag": {
+        "color": "red",
+        "text": ""
+      },
+      "images": [
+        "https://www.avis-taiwan.com/rental-office.php"
+      ],
+      "videos": [],
+      "links": []
+    },
+    {
+      "id": "q1775818899195",
+      "catId": "c1775818810537",
+      "q": "2026 輕鬆駕馭，自由隨行",
+      "a": "【優惠時間】2026/1/1~2026/12/31\n【取車時間】2026/1/1~2026/12/31\n【活動內容】活動期間全車款平日 65 折、假日 7 折\n【別錯過 AVIS 會員專屬回饋！現在完成註冊即享】\n・註冊禮：新會員立即送 200 點\n・消費禮：消費每滿 100 元累積 1 點\n・如何使用：會員點數 1 點折抵 1 元\n\n【立即註冊】https://avis-tw.com/c0UWO  點下方連結 \n註冊免費，點數立即獲得，點數適用優惠依各優惠實際規範為準。",
+      "tag": {
+        "color": "blue",
+        "text": ""
+      },
+      "images": [],
+      "videos": [],
+      "links": [
+        "https://avis-tw.com/c0UWO"
+      ]
+    },
+    {
+      "id": "q1775819302888",
+      "catId": "c1775818810537",
+      "q": "高鐵 + 租車 超值任你行",
+      "a": "優惠適用站點：AVIS 艾維士租車\n板橋/新竹/台中(烏日)/嘉義/台南/左營 高鐵站點\n注意事項：\n1. 本優惠有效期間：即日起至 2026/12/31\n2. 優惠內容包含：// 車型指南參考 點下方連結 \nhttps://www.avis-taiwan.com/cars.php\n\n● 標準車廂票根 >>\n全車款 - 不分平假日 當日取還 5 折；平日 5 折 (24h)；假日 65 折 (24h)\n\n● 商務車廂票根 >>\n一般車款 - 不分平假日 當日取還 5 折；平日 5 折 (24h)；假日 65 折 (24h)\n尊榮車款 - 不分平假日 當日取還 4 折；平日 45 折 (24h)；假日 6 折 (24h)\n\n● 周遊券票根 >>\n全車款 - 不分平假日 連續 3 日以上 6 折。\n\n ※ 汽車燃油費用表 // 點下方連結\nhttps://www.avis-taiwan.com/epaper.php?SID=511e9eeb-08d7-11ed-aabe-1abb283e10b0",
+      "tag": null,
+      "images": [],
+      "videos": [],
+      "links": [
+        "https://www.avis-taiwan.com/cars.php",
+        "https://www.avis-taiwan.com/epaper.php?SID=511e9eeb-08d7-11ed-aabe-1abb283e10b0"
+      ]
+    },
+    {
+      "id": "q1775819594436",
+      "catId": "c1775818810537",
+      "q": "信用卡優惠",
+      "a": "萬事達卡 享獨家優惠【2026 年度】\n自駕租車 6 折起\n司機接送 88 折起\n\n兆豐銀行卡友優惠\n自駕租車65折起\n\n聯邦銀行 國內租車付款刷\n租車 享 7 折起\n司機接送 享 88 折\n\n滙豐銀行 卡友限定優惠\n租車 7 折起，機場接送輸入代碼享9折\n\n彰化銀行 卡友限定優惠\n租車 7 折起，機場接送輸入代碼享折扣\n\n美國運通 國內租車付款刷 \n租車自駕 5 折起\n\n中國銀聯 國內租車付款刷 \n租車 享 55 折起\n機場接送享 88 折",
+      "tag": {
+        "color": "blue",
+        "text": ""
+      },
+      "images": [],
+      "videos": [],
+      "links": [
+        "萬事達卡 享獨家優惠 https://www.avis-taiwan.com/offer_info.php?ID=866",
+        "兆豐銀行卡友優惠 https://www.avis-taiwan.com/offer_info.php?ID=756",
+        "聯邦銀行  https://www.avis-taiwan.com/offer_info.php?ID=743",
+        "滙豐銀行  https://www.avis-taiwan.com/offer_info.php?ID=748",
+        "彰化銀行  https://www.avis-taiwan.com/offer_info.php?ID=746",
+        "美國運通  https://www.avis-taiwan.com/offer_info.php?ID=337",
+        "中國銀聯  https://www.avis-taiwan.com/offer_info.php?ID=747"
+      ]
+    },
+    {
+      "id": "q1775819770718",
+      "catId": "c1775818810537",
+      "q": "航空公司優惠",
+      "a": "遨遊世界 中華航空\n華夏會員 空陸獎勵計畫\n每筆自駕租車預訂 賺取 500 哩程\n\n注意事項：\n1. 預訂時請於AWD欄位輸入折扣代碼，並且輸入您的華夏會員號碼。\n2. 取車時必須出示租車者的華夏會員卡，或有效會員證明文件\n3. 詳細條款與適用條件請參考 條款與適用條件\n4.  AVIS 保留解釋及修改優惠之權利，若有任何異動，將不會主動通知。\n\n長榮航空 EVA AIR 限定優惠\n完美自駕遊 就從 AVIS 啟程\n最優 65 折\nAVIS 艾維士租車 X 長榮航空 限定優惠\n平日 65折 、 假日 75折\n\n 注意事項：\n１. 本專案至遲須於取車日3日前預約，未預約者恕不提供接駁服務。請點擊上方按鈕進行填單預約。\n\n2. 一般車款承租人需年滿 20 歲、持有中華民國身份證及有效駕照、使用信用卡付款，並同意各項合約條款規範；尊榮車款承租人需年滿 25 歲、持有中華民國身份證及有效駕照、使用白金卡 (含) 以上信用卡付款，並同意各項合約條款規範。\n\n3. 外籍旅客須出示承租人本人之護照、互惠國所發有效之國際駕照、原國駕照、信用卡。\n\n4. 本優惠不得與其他租車優惠專案及折價券同時使用，亦不再適用航空哩程贈送優惠。\n\n5. 短租自駕一般車款及尊榮車窾承租人須符合承租資格並同意租賃契約各項約定，方可租用車輛。\n\n6. AVIS安維斯租車對本優惠內容保有修改及解釋之權利。\n\n※ 付款方式：敬請使用信用卡(效期需大於6個月以上)；恕不接受現金 / 金融簽帳卡。\n※ 可接受卡別：Visa / MasterCard / JCB / 美國運通卡 / 中國銀聯卡\n※ ​​​​​​於站點取車時，請務必攜帶非簽帳金融卡之信用卡，取車時出示簽帳金融卡導致無法取車，訂金將不予退還。\n※ 線上訂購租車刷卡將收取訂金，訂金僅為預取授權，於取車時將取消授權，並於現場收取全額租金。",
+      "tag": {
+        "color": "purple",
+        "text": ""
+      },
+      "images": [],
+      "videos": [],
+      "links": [
+        "中華航空 https://www.avis-taiwan.com/offer_info.php?ID=242",
+        "長榮航空 https://www.avis-taiwan.com/offer_info.php?ID=241"
+      ]
+    },
+    {
+      "id": "q1775819992097",
+      "catId": "c1775818810537",
+      "q": "異業優惠",
+      "a": "◆台灣人壽網路會員專屬優惠活動\n活動期間網路投保台灣人壽旅平險，抽亞洲雙人來回機票\n\n◆美好旅行 即刻啟程－Costco黑鑽會員獨享優惠\nCostco黑鑽卡會員獨享優惠\n國內自駕租車 4 折起、國外自駕租車 9 折起\n\n◆AVIS x 中華車會\n道安會員  自駕/代駕 優惠實施中\n\n◆台大 EMBA 校友專屬\n短期租車 全車款\n平日 5 折 假日 6 折\n\n◆富邦產險限定專案\nAVIS艾維士租車短租自駕方案平日6折、假日65折，連續假日75折\n\n◆全球人壽保戶專屬 自駕Go\n租車 平日租 1 送 1、假日 65 折優惠\n連續假日 75 折優惠",
+      "tag": {
+        "color": "blue",
+        "text": ""
+      },
+      "images": [],
+      "videos": [],
+      "links": [
+        "台灣人壽  https://www.avis-taiwan.com/offer_info.php?ID=718",
+        "Costco黑鑽卡會員  https://www.avis-taiwan.com/offer_info.php?ID=396",
+        "道安會員  https://www.avis-taiwan.com/offer_info.php?ID=511",
+        "台大 EMBA 校友  https://www.avis-taiwan.com/offer_info.php?ID=315",
+        "富邦產險  https://www.avis-taiwan.com/offer_info.php?ID=166",
+        "全球人壽保戶 https://www.avis-taiwan.com/offer_info.php?ID=388"
+      ]
     }
   ]
 }
