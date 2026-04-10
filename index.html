@@ -799,7 +799,30 @@ body {
   100% { transform: translateX(-100%); }
 }
 
-/* color preview in textarea */
+/* link pair row in QA modal */
+.qa-link-pair-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.qa-link-pair-row .form-input { font-size: 13px; }
+.qa-link-pair-name { flex: 1; min-width: 0; }
+.qa-link-pair-url { flex: 2; min-width: 0; }
+.btn-link-del {
+  flex-shrink: 0;
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 5px;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1;
+  transition: background .15s;
+}
+.btn-link-del:hover { background: #fecaca; }
 .color-preview-note {
   font-size: 11px;
   color: var(--text-muted);
@@ -994,13 +1017,6 @@ body {
   </div>
 </div>
 
-<!-- SITE BANNER -->
-<div class="site-banner" id="site-banner" style="display:none">
-  <span class="site-banner-name" id="site-banner-name"></span>
-  <div class="site-banner-sep" id="site-banner-sep" style="display:none"></div>
-  <div class="site-banner-links" id="site-banner-links"></div>
-</div>
-
 <!-- MAIN LAYOUT -->
 <div class="layout">
   <!-- SIDEBAR -->
@@ -1056,7 +1072,6 @@ body {
       <div class="admin-tabs">
         <button class="admin-tab active" onclick="switchAdminTab('qa', this)">QA 管理</button>
         <button class="admin-tab" onclick="switchAdminTab('cat', this)">分類設定</button>
-        <button class="admin-tab" onclick="switchAdminTab('banner', this)">名稱列</button>
         <button class="admin-tab" onclick="switchAdminTab('marquee', this)">跑馬燈</button>
         <button class="admin-tab" onclick="switchAdminTab('data', this)">資料匯出入</button>
       </div>
@@ -1076,28 +1091,6 @@ body {
           <div class="admin-section-title">分類設定</div>
         </div>
         <div id="cat-edit-list"></div>
-      </div>
-
-      <!-- Banner Tab -->
-      <div class="admin-tab-content" id="tab-banner">
-        <div class="admin-section-header">
-          <div class="admin-section-title">名稱列設定</div>
-        </div>
-        <div class="data-mgmt-section">
-          <div class="data-mgmt-title">網頁名稱</div>
-          <div class="data-mgmt-desc">顯示在導覽列下方的標題名稱，留空則不顯示名稱列。</div>
-          <div class="form-group">
-            <label class="form-label">名稱</label>
-            <input class="form-input" id="banner-name-input" placeholder="例：AVIS 艾維士 客服知識庫">
-          </div>
-        </div>
-        <div class="data-mgmt-section">
-          <div class="data-mgmt-title">快捷連結</div>
-          <div class="data-mgmt-desc">在名稱旁顯示的連結按鈕，可新增多個（例如：AST系統、常用表單等）。</div>
-          <div id="banner-links-list"></div>
-          <button class="btn-secondary" style="margin-top:10px;font-size:12px" onclick="addBannerLink()">＋ 新增連結</button>
-        </div>
-        <button class="btn-primary" onclick="saveBanner()">儲存名稱列</button>
       </div>
 
       <!-- Marquee Tab -->
@@ -1192,16 +1185,9 @@ body {
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">圖片網址（選填，可多張，換行分隔）</label>
-        <textarea class="form-textarea" id="qa-images-input" placeholder="https://... （每行一張圖）" style="min-height:70px"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">影片連結（選填，Google Drive 連結，換行分隔）</label>
-        <textarea class="form-textarea" id="qa-videos-input" placeholder="https://drive.google.com/..." style="min-height:70px"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">相關連結（選填，格式：網址|顯示文字，換行分隔）</label>
-        <textarea class="form-textarea" id="qa-links-input" placeholder="https://...|點此查看文件" style="min-height:70px"></textarea>
+        <label class="form-label">相關連結（選填）</label>
+        <div id="qa-links-list"></div>
+        <button type="button" class="btn-secondary" style="margin-top:8px;font-size:12px;padding:6px 14px" onclick="addQALink()">＋ 加入連結</button>
       </div>
       <div class="btn-row">
         <button class="btn-secondary" onclick="closeQAModal()">取消</button>
@@ -1708,6 +1694,37 @@ function deleteCat(i) {
   if (db.categories.length > 0) selectAdminCat(db.categories[0].id);
 }
 
+// ─── QA LINK PAIRS ────────────────────────────────────────────────────────────
+let _qaLinks = []; // [{ label, url }, ...]
+
+function renderQALinksList() {
+  const list = document.getElementById('qa-links-list');
+  if (_qaLinks.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--text-light);padding:4px 0">尚無連結，點下方按鈕新增</div>';
+    return;
+  }
+  list.innerHTML = _qaLinks.map((l, i) =>
+    '<div class="qa-link-pair-row">' +
+      '<input class="form-input qa-link-pair-name" placeholder="連結名稱" value="' + l.label + '" oninput="_qaLinks[' + i + '].label=this.value">' +
+      '<input class="form-input qa-link-pair-url" placeholder="https://..." value="' + l.url + '" oninput="_qaLinks[' + i + '].url=this.value">' +
+      '<button class="btn-link-del" onclick="removeQALink(' + i + ')">✕</button>' +
+    '</div>'
+  ).join('');
+}
+
+function addQALink() {
+  _qaLinks.push({ label: '', url: '' });
+  renderQALinksList();
+  // focus the new name field
+  const rows = document.querySelectorAll('.qa-link-pair-row');
+  if (rows.length) rows[rows.length - 1].querySelector('.qa-link-pair-name').focus();
+}
+
+function removeQALink(i) {
+  _qaLinks.splice(i, 1);
+  renderQALinksList();
+}
+
 // ─── ADMIN QA ─────────────────────────────────────────────────────────────────
 function renderAdminQAList() {
   const cat = db.categories.find(c => c.id === adminCatId);
@@ -1765,9 +1782,8 @@ function openAddQA() {
   document.getElementById('qa-a-input').value = '';
   document.getElementById('qa-tag-color').value = '';
   document.getElementById('qa-tag-text').value = '';
-  document.getElementById('qa-images-input').value = '';
-  document.getElementById('qa-videos-input').value = '';
-  document.getElementById('qa-links-input').value = '';
+  _qaLinks = [];
+  renderQALinksList();
   document.getElementById('qa-modal').classList.add('open');
 }
 
@@ -1779,9 +1795,12 @@ function openEditQA(globalIdx) {
   document.getElementById('qa-a-input').value = item.a;
   document.getElementById('qa-tag-color').value = item.tag ? item.tag.color : '';
   document.getElementById('qa-tag-text').value = item.tag ? item.tag.text : '';
-  document.getElementById('qa-images-input').value = (item.images || []).join('\n');
-  document.getElementById('qa-videos-input').value = (item.videos || []).join('\n');
-  document.getElementById('qa-links-input').value = (item.links || []).join('\n');
+  // parse existing links (format: "url|label" or just "url")
+  _qaLinks = (item.links || []).map(s => {
+    const p = s.split('|');
+    return { url: p[0].trim(), label: p[1] ? p[1].trim() : '' };
+  });
+  renderQALinksList();
   document.getElementById('qa-modal').classList.add('open');
 }
 
@@ -1796,16 +1815,17 @@ function saveQA() {
 
   const tagColor = document.getElementById('qa-tag-color').value;
   const tagText = document.getElementById('qa-tag-text').value.trim();
-  const images = document.getElementById('qa-images-input').value.split('\n').map(s => s.trim()).filter(Boolean);
-  const videos = document.getElementById('qa-videos-input').value.split('\n').map(s => s.trim()).filter(Boolean);
-  const links = document.getElementById('qa-links-input').value.split('\n').map(s => s.trim()).filter(Boolean);
+  // serialize links as "url|label"
+  const links = _qaLinks
+    .filter(l => l.url.trim())
+    .map(l => l.url.trim() + (l.label.trim() ? '|' + l.label.trim() : ''));
 
   const item = {
     id: editingQAIndex !== null ? db.items[editingQAIndex].id : 'q' + Date.now(),
     catId: editingQAIndex !== null ? db.items[editingQAIndex].catId : adminCatId,
     q, a,
     tag: tagColor ? { color: tagColor, text: tagText } : null,
-    images, videos, links
+    images: [], videos: [], links
   };
 
   if (editingQAIndex !== null) {
