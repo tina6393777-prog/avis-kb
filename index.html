@@ -799,6 +799,64 @@ body {
   100% { transform: translateX(-100%); }
 }
 
+/* ── IMAGE UPLOAD ── */
+.img-upload-area {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+  background: var(--bg);
+}
+.img-upload-area:hover { border-color: var(--red); background: var(--red-light); }
+.img-upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.img-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.img-preview-item {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.img-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.img-preview-del {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  cursor: pointer;
+  line-height: 18px;
+  text-align: center;
+  padding: 0;
+}
+.img-preview-del:hover { background: var(--red); }
+
 /* ── COLOR TOOLBAR ── */
 .color-toolbar {
   display: flex;
@@ -1254,6 +1312,18 @@ body {
         <label class="form-label">相關連結（選填）</label>
         <div id="qa-links-list"></div>
         <button type="button" class="btn-secondary" style="margin-top:8px;font-size:12px;padding:6px 14px" onclick="addQALink()">＋ 加入連結</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">圖片上傳（選填）</label>
+        <div class="img-upload-area" id="img-upload-area" onclick="document.getElementById('img-file-input').click()" ondragover="event.preventDefault()" ondrop="handleImgDrop(event)">
+          <div class="img-upload-placeholder" id="img-upload-placeholder">
+            <span style="font-size:24px">🖼</span>
+            <span>點擊或拖曳圖片上傳</span>
+            <span style="font-size:11px;color:var(--text-light)">支援 JPG、PNG、GIF、WebP</span>
+          </div>
+          <input type="file" id="img-file-input" accept="image/*" multiple style="display:none" onchange="handleImgUpload(this)">
+        </div>
+        <div class="img-preview-list" id="img-preview-list"></div>
       </div>
       <div class="btn-row">
         <button class="btn-secondary" onclick="closeQAModal()">取消</button>
@@ -1802,6 +1872,53 @@ function wrapColor(color) {
   ta.focus();
 }
 
+// ─── IMAGE UPLOAD ─────────────────────────────────────────────────────────────
+let _qaImages = []; // array of base64 data URLs
+
+function handleImgUpload(input) {
+  const files = Array.from(input.files);
+  if (!files.length) return;
+  files.forEach(file => {
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      _qaImages.push(e.target.result);
+      renderQAImagePreview();
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+function handleImgDrop(e) {
+  e.preventDefault();
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      _qaImages.push(ev.target.result);
+      renderQAImagePreview();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function removeQAImage(i) {
+  _qaImages.splice(i, 1);
+  renderQAImagePreview();
+}
+
+function renderQAImagePreview() {
+  const list = document.getElementById('img-preview-list');
+  if (_qaImages.length === 0) { list.innerHTML = ''; return; }
+  list.innerHTML = _qaImages.map((src, i) =>
+    '<div class="img-preview-item">' +
+      '<img src="' + src + '">' +
+      '<button class="img-preview-del" onclick="removeQAImage(' + i + ')">✕</button>' +
+    '</div>'
+  ).join('');
+}
+
 // ─── QA LINK PAIRS ────────────────────────────────────────────────────────────
 let _qaLinks = []; // [{ label, url }, ...]
 
@@ -1892,6 +2009,8 @@ function openAddQA() {
   document.getElementById('qa-tag-text').value = '';
   _qaLinks = [];
   renderQALinksList();
+  _qaImages = [];
+  renderQAImagePreview();
   document.getElementById('qa-modal').classList.add('open');
 }
 
@@ -1903,12 +2022,13 @@ function openEditQA(globalIdx) {
   document.getElementById('qa-a-input').value = item.a;
   document.getElementById('qa-tag-color').value = item.tag ? item.tag.color : '';
   document.getElementById('qa-tag-text').value = item.tag ? item.tag.text : '';
-  // parse existing links (format: "url|label" or just "url")
   _qaLinks = (item.links || []).map(s => {
     const p = s.split('|');
     return { url: p[0].trim(), label: p[1] ? p[1].trim() : '' };
   });
   renderQALinksList();
+  _qaImages = item.images ? [...item.images] : [];
+  renderQAImagePreview();
   document.getElementById('qa-modal').classList.add('open');
 }
 
@@ -1933,7 +2053,7 @@ function saveQA() {
     catId: editingQAIndex !== null ? db.items[editingQAIndex].catId : adminCatId,
     q, a,
     tag: tagColor ? { color: tagColor, text: tagText } : null,
-    images: [], videos: [], links
+    images: [..._qaImages], videos: [], links
   };
 
   if (editingQAIndex !== null) {
