@@ -1312,7 +1312,6 @@ function getDefaultData() {
 // ─── RENDER ───────────────────────────────────────────────────────────────────
 function renderAll() {
   renderMarquee();
-  renderBanner();
   renderSidebar();
   if (db.categories.length > 0) {
     selectCategory(db.categories[0].id);
@@ -1328,28 +1327,6 @@ function renderMarquee() {
   } else {
     bar.style.display = 'none';
   }
-}
-
-function renderBanner() {
-  const banner = document.getElementById('site-banner');
-  const nameEl = document.getElementById('site-banner-name');
-  const sep = document.getElementById('site-banner-sep');
-  const linksEl = document.getElementById('site-banner-links');
-
-  const name = db.bannerName || '';
-  const links = db.bannerLinks || [];
-
-  if (!name && links.length === 0) {
-    banner.style.display = 'none';
-    return;
-  }
-
-  banner.style.display = 'flex';
-  nameEl.textContent = name;
-  sep.style.display = (name && links.length > 0) ? 'block' : 'none';
-  linksEl.innerHTML = links.map(l =>
-    '<a class="site-banner-link" href="' + l.url + '" target="_blank" rel="noopener">🔗 ' + l.label + '</a>'
-  ).join('');
 }
 
 function renderSidebar() {
@@ -1602,8 +1579,6 @@ function openAdmin() {
   renderAdminCatList();
   if (db.categories.length > 0) selectAdminCat(db.categories[0].id);
   document.getElementById('marquee-input').value = db.marquee || '';
-  document.getElementById('banner-name-input').value = db.bannerName || '';
-  renderBannerLinksList();
 }
 
 function exitAdmin() {
