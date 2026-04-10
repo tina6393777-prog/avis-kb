@@ -1531,13 +1531,16 @@ function renderEmojiGrid(i) {
 }
 
 function selectEmoji(emoji) {
+  // 先把 callback 和 idx 存起來，因為 closeEmojiPicker 會清掉它們
+  const cb = _emojiCallback;
+  const idx = _emojiEditCatIdx;
   closeEmojiPicker();
-  if (_emojiCallback) {
-    _emojiCallback(emoji);
+  if (cb) {
+    cb(emoji);
     return;
   }
-  if (_emojiEditCatIdx !== null) {
-    updateCat(_emojiEditCatIdx, 'icon', emoji);
+  if (idx !== null) {
+    updateCat(idx, 'icon', emoji);
     renderCatEditList();
   }
 }
@@ -1653,13 +1656,16 @@ function selectAdminCat(catId) {
 
 function addCategory() {
   openEmojiPicker(null, function(icon) {
-    const name = prompt('請輸入新分類名稱：');
-    if (!name || !name.trim()) return;
-    const newCat = { id: 'c' + Date.now(), icon: icon, name: name.trim() };
-    db.categories.push(newCat);
-    saveToLocal();
-    renderAdminCatList();
-    selectAdminCat(newCat.id);
+    // 用 setTimeout 確保 overlay 完全關閉後再跳 prompt
+    setTimeout(function() {
+      const name = prompt('請輸入新分類名稱：');
+      if (!name || !name.trim()) return;
+      const newCat = { id: 'c' + Date.now(), icon: icon, name: name.trim() };
+      db.categories.push(newCat);
+      saveToLocal();
+      renderAdminCatList();
+      selectAdminCat(newCat.id);
+    }, 50);
   });
 }
 
