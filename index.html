@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVIS 艾維士 | 客服知識庫</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #C8102E;
+  --red-dark: #9e0c23;
+  --red-light: #f5e6e9;
+  --navy: #1a1f2e;
+  --navy-mid: #252b3b;
+  --navy-soft: #2e3548;
+  --gold: #d4a843;
+  --text: #1a1f2e;
+  --text-muted: #6b7280;
+  --text-light: #9ca3af;
+  --bg: #f8f7f5;
+  --bg-card: #ffffff;
+  --border: #e5e0d8;
+  --border-light: #f0ece6;
+  --shadow: 0 2px 12px rgba(26,31,46,0.08);
+  --shadow-md: 0 4px 24px rgba(26,31,46,0.12);
+  --radius: 10px;
+  --radius-lg: 16px;
+
+  /* tag colors */
+  --tag-red: #fee2e2;
+  --tag-red-text: #991b1b;
+  --tag-yellow: #fef3c7;
+  --tag-yellow-text: #92400e;
+  --tag-green: #d1fae5;
+  --tag-green-text: #065f46;
+  --tag-blue: #dbeafe;
+  --tag-blue-text: #1e40af;
+  --tag-purple: #ede9fe;
+  --tag-purple-text: #5b21b6;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── TOP NAV ── */
+.topbar {
+  background: var(--navy);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-mark {
+  background: var(--red);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+.logo-text {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+.topbar-divider { width: 1px; height: 24px; background: rgba(255,255,255,0.15); }
+
+.search-wrap {
+  flex: 1;
+  max-width: 440px;
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 8px 16px 8px 40px;
+  color: #fff;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: all .2s;
+}
+.search-input::placeholder { color: rgba(255,255,255,0.4); }
+.search-input:focus {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+}
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.4);
+  font-size: 14px;
+  pointer-events: none;
+}
+.topbar-actions { margin-left: auto; display: flex; gap: 8px; }
+.btn-admin {
+  background: rgba(200,16,46,0.2);
+  color: #fff;
+  border: 1px solid rgba(200,16,46,0.4);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+}
+.btn-admin:hover { background: rgba(200,16,46,0.4); }
+
+/* ── SEARCH RESULTS ── */
+.search-results-panel {
+  display: none;
+  position: absolute;
+  top: 44px;
+  left: 0;
+  right: 0;
+  background: var(--navy-mid);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 300;
+}
+.search-result-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background .15s;
+}
+.search-result-item:hover { background: rgba(255,255,255,0.06); }
+.search-result-item:last-child { border-bottom: none; }
+.sr-category { font-size: 10px; color: var(--gold); margin-bottom: 2px; }
+.sr-question { font-size: 13px; color: #fff; }
+.sr-highlight { background: rgba(212,168,67,0.3); border-radius: 2px; padding: 0 2px; }
+.sr-empty { padding: 20px 16px; text-align: center; color: rgba(255,255,255,0.4); font-size: 13px; }
+
+/* ── LAYOUT ── */
+.layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: calc(100vh - 56px);
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  background: var(--bg-card);
+  border-right: 1px solid var(--border);
+  padding: 20px 0;
+  overflow-y: auto;
+  height: calc(100vh - 56px);
+  position: sticky;
+  top: 56px;
+}
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-light);
+  padding: 0 20px 8px;
+  text-transform: uppercase;
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  cursor: pointer;
+  transition: all .15s;
+  border-left: 3px solid transparent;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+.sidebar-item:hover { background: var(--bg); color: var(--text); }
+.sidebar-item.active {
+  background: var(--red-light);
+  color: var(--red);
+  border-left-color: var(--red);
+  font-weight: 500;
+}
+.sidebar-icon { font-size: 15px; flex-shrink: 0; }
+.sidebar-count {
+  margin-left: auto;
+  font-size: 11px;
+  background: var(--border-light);
+  color: var(--text-light);
+  padding: 1px 7px;
+  border-radius: 20px;
+}
+.sidebar-item.active .sidebar-count { background: rgba(200,16,46,0.12); color: var(--red); }
+
+/* ── MAIN CONTENT ── */
+.main {
+  padding: 28px 32px;
+  max-width: 900px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.page-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── QA CARDS ── */
+.qa-section { margin-bottom: 32px; }
+.qa-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-light);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.qa-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: all .2s;
+}
+.qa-card:hover { box-shadow: var(--shadow); }
+
+.qa-q {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+}
+.qa-q-marker {
+  background: var(--red);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-family: 'DM Mono', monospace;
+}
+.qa-q-text {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.5;
+}
+.qa-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+.qa-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.tag-red { background: var(--tag-red); color: var(--tag-red-text); }
+.tag-yellow { background: var(--tag-yellow); color: var(--tag-yellow-text); }
+.tag-green { background: var(--tag-green); color: var(--tag-green-text); }
+.tag-blue { background: var(--tag-blue); color: var(--tag-blue-text); }
+.tag-purple { background: var(--tag-purple); color: var(--tag-purple-text); }
+
+.qa-chevron {
+  color: var(--text-light);
+  font-size: 12px;
+  flex-shrink: 0;
+  transition: transform .2s;
+  margin-top: 3px;
+}
+.qa-card.open .qa-chevron { transform: rotate(180deg); }
+
+.qa-a {
+  display: none;
+  padding: 0 18px 16px 18px;
+  border-top: 1px solid var(--border-light);
+}
+.qa-card.open .qa-a { display: block; }
+.qa-a-content {
+  padding-top: 14px;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.qa-a-content a { color: var(--red); text-decoration: none; }
+.qa-a-content a:hover { text-decoration: underline; }
+
+/* highlight colors */
+.hl-red { color: #b91c1c; font-weight: 600; }
+.hl-orange { color: #c2410c; font-weight: 600; }
+.hl-green { color: #065f46; font-weight: 600; }
+.hl-blue { color: #1e40af; font-weight: 600; }
+
+.qa-media {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.qa-image {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.qa-video-embed {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--navy);
+}
+.qa-video-embed iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+.qa-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--navy);
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  transition: background .15s;
+  width: fit-content;
+}
+.qa-link-btn:hover { background: var(--navy-soft); }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty-title { font-size: 16px; font-weight: 500; margin-bottom: 6px; }
+.empty-sub { font-size: 13px; color: var(--text-light); }
+
+/* ── MODAL OVERLAY ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  width: 92%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-md);
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-muted);
+  line-height: 1;
+}
+.modal-body { padding: 20px 24px 24px; }
+
+.form-group { margin-bottom: 16px; }
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-input, .form-textarea, .form-select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  outline: none;
+  transition: border-color .2s;
+}
+.form-input:focus, .form-textarea:focus, .form-select:focus {
+  border-color: var(--red);
+}
+.form-textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.btn-primary {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 20px;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+.btn-primary:hover { background: var(--red-dark); }
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 20px;
+  font-size: 13.5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+}
+.btn-secondary:hover { border-color: var(--text-muted); }
+
+/* ── ADMIN PANEL ── */
+#admin-panel {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--navy);
+  z-index: 500;
+  overflow: hidden;
+}
+#admin-panel.open { display: flex; flex-direction: column; }
+
+.admin-topbar {
+  background: var(--navy-mid);
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+.admin-title { color: #fff; font-weight: 700; font-size: 15px; }
+.admin-badge {
+  background: var(--red);
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.btn-exit-admin {
+  margin-left: auto;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+}
+.btn-exit-admin:hover { background: rgba(255,255,255,0.14); }
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  flex: 1;
+  overflow: hidden;
+}
+.admin-sidebar {
+  background: var(--navy-soft);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  overflow-y: auto;
+  padding: 16px 0;
+}
+.admin-sidebar-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.3);
+  padding: 0 16px 8px;
+  text-transform: uppercase;
+}
+.admin-cat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  transition: all .15s;
+  border-left: 3px solid transparent;
+}
+.admin-cat-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+.admin-cat-item.active {
+  background: rgba(200,16,46,0.15);
+  color: #fff;
+  border-left-color: var(--red);
+}
+.admin-cat-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+}
+.btn-add-cat {
+  margin: 12px 16px 0;
+  width: calc(100% - 32px);
+  background: rgba(255,255,255,0.05);
+  border: 1px dashed rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.5);
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+}
+.btn-add-cat:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
+
+.admin-main {
+  overflow-y: auto;
+  padding: 24px 28px;
+  background: var(--bg);
+}
+
+.admin-section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.admin-section-title { font-size: 17px; font-weight: 700; color: var(--text); }
+.btn-add-qa {
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+  margin-left: auto;
+}
+.btn-add-qa:hover { background: var(--red-dark); }
+
+/* admin QA list */
+.admin-qa-item {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 8px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.admin-qa-drag { color: var(--text-light); cursor: grab; font-size: 14px; padding-top: 2px; flex-shrink: 0; }
+.admin-qa-q { flex: 1; font-size: 13.5px; font-weight: 500; color: var(--text); }
+.admin-qa-meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+.admin-qa-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.btn-edit, .btn-delete, .btn-move {
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all .15s;
+}
+.btn-edit { background: #dbeafe; color: #1e40af; }
+.btn-edit:hover { background: #bfdbfe; }
+.btn-delete { background: #fee2e2; color: #991b1b; }
+.btn-delete:hover { background: #fecaca; }
+.btn-move { background: var(--border-light); color: var(--text-muted); padding: 5px 7px; }
+.btn-move:hover { background: var(--border); }
+
+/* admin cat edit */
+.admin-cat-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.cat-edit-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+  outline: none;
+}
+.cat-edit-input:focus { border-color: var(--red); }
+
+/* data management */
+.data-mgmt-section {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.data-mgmt-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text); }
+.data-mgmt-desc { font-size: 12.5px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.6; }
+.data-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-data {
+  padding: 8px 16px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  transition: all .15s;
+}
+.btn-export { background: var(--navy); color: #fff; }
+.btn-export:hover { background: var(--navy-soft); }
+.btn-import { background: var(--gold); color: #fff; }
+.btn-import:hover { background: #b8902e; }
+
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: -1px;
+}
+.admin-tab {
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: inherit;
+  margin-bottom: -1px;
+}
+.admin-tab:hover { color: var(--text); }
+.admin-tab.active { color: var(--red); border-bottom-color: var(--red); }
+
+.admin-tab-content { display: none; }
+.admin-tab-content.active { display: block; }
+
+/* toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--navy);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  z-index: 2000;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all .25s;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* password modal */
+.pw-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 900;
+  align-items: center;
+  justify-content: center;
+}
+.pw-overlay.open { display: flex; }
+.pw-box {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 340px;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+.pw-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.pw-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+.pw-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  font-size: 15px;
+  text-align: center;
+  letter-spacing: 4px;
+  font-family: 'DM Mono', monospace;
+  outline: none;
+  transition: border-color .2s;
+  margin-bottom: 12px;
+}
+.pw-input:focus { border-color: var(--red); }
+.pw-error { font-size: 12px; color: var(--red); margin-top: -6px; margin-bottom: 10px; min-height: 16px; }
+.btn-pw-enter {
+  width: 100%;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 11px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background .15s;
+}
+.btn-pw-enter:hover { background: var(--red-dark); }
+
+/* marquee */
+.marquee-bar {
+  background: var(--red);
+  color: #fff;
+  font-size: 12.5px;
+  padding: 5px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.marquee-inner {
+  display: inline-block;
+  animation: marquee 25s linear infinite;
+}
+@keyframes marquee {
+  0% { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
+}
+
+/* color preview in textarea */
+.color-preview-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+.color-chip { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 3px; }
+.chip-red { background: #b91c1c; }
+.chip-orange { background: #c2410c; }
+.chip-green { background: #065f46; }
+.chip-blue { background: #1e40af; }
+
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .main { padding: 20px 16px; }
+  .admin-layout { grid-template-columns: 1fr; }
+  .admin-sidebar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- marquee -->
+<div class="marquee-bar" id="marquee-bar" style="display:none">
+  <span class="marquee-inner" id="marquee-text"></span>
+</div>
+
+<!-- TOP NAV -->
+<div class="topbar">
+  <div class="logo">
+    <span class="logo-mark">AVIS</span>
+    <span class="logo-text">客服知識庫</span>
+  </div>
+  <div class="topbar-divider"></div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="search-input" type="text" placeholder="搜尋問題關鍵字...">
+    <div class="search-results-panel" id="search-results-panel"></div>
+  </div>
+  <div class="topbar-actions">
+    <button class="btn-admin" onclick="openAdminLogin()">⚙ 後台管理</button>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">分類導覽</div>
+    <div id="sidebar-list"></div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="main" id="main-content">
+    <div id="content-area"></div>
+  </main>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div class="pw-overlay" id="pw-overlay">
+  <div class="pw-box">
+    <div class="pw-title">🔐 後台管理</div>
+    <div class="pw-sub">請輸入管理員密碼</div>
+    <input class="pw-input" id="pw-input" type="password" placeholder="••••" maxlength="20"
+      onkeydown="if(event.key==='Enter') checkPassword()">
+    <div class="pw-error" id="pw-error"></div>
+    <button class="btn-pw-enter" onclick="checkPassword()">進入後台</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel">
+  <div class="admin-topbar">
+    <span class="admin-title">後台管理</span>
+    <span class="admin-badge">ADMIN</span>
+    <button class="btn-exit-admin" onclick="exitAdmin()">← 回前台</button>
+  </div>
+  <div class="admin-layout">
+    <div class="admin-sidebar">
+      <div class="admin-sidebar-label">分類管理</div>
+      <div id="admin-cat-list"></div>
+      <button class="btn-add-cat" onclick="addCategory()">＋ 新增分類</button>
+    </div>
+    <div class="admin-main">
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('qa', this)">QA 管理</button>
+        <button class="admin-tab" onclick="switchAdminTab('cat', this)">分類設定</button>
+        <button class="admin-tab" onclick="switchAdminTab('marquee', this)">跑馬燈</button>
+        <button class="admin-tab" onclick="switchAdminTab('data', this)">資料匯出入</button>
+      </div>
+
+      <!-- QA Tab -->
+      <div class="admin-tab-content active" id="tab-qa">
+        <div class="admin-section-header">
+          <div class="admin-section-title" id="admin-cat-title">請選擇分類</div>
+          <button class="btn-add-qa" onclick="openAddQA()">＋ 新增 QA</button>
+        </div>
+        <div id="admin-qa-list"></div>
+      </div>
+
+      <!-- Category Tab -->
+      <div class="admin-tab-content" id="tab-cat">
+        <div class="admin-section-header">
+          <div class="admin-section-title">分類設定</div>
+        </div>
+        <div id="cat-edit-list"></div>
+      </div>
+
+      <!-- Marquee Tab -->
+      <div class="admin-tab-content" id="tab-marquee">
+        <div class="admin-section-header">
+          <div class="admin-section-title">跑馬燈設定</div>
+        </div>
+        <div class="data-mgmt-section">
+          <div class="data-mgmt-title">跑馬燈訊息</div>
+          <div class="data-mgmt-desc">顯示在頁面頂端的滾動提示訊息。留空則不顯示。</div>
+          <div class="form-group">
+            <label class="form-label">訊息內容</label>
+            <textarea class="form-textarea" id="marquee-input" placeholder="輸入跑馬燈文字，留空則不顯示" style="min-height:80px"></textarea>
+          </div>
+          <button class="btn-primary" onclick="saveMarquee()">儲存跑馬燈</button>
+        </div>
+      </div>
+
+      <!-- Data Tab -->
+      <div class="admin-tab-content" id="tab-data">
+        <div class="data-mgmt-section">
+          <div class="data-mgmt-title">📤 匯出資料</div>
+          <div class="data-mgmt-desc">將目前所有 QA 資料匯出為 <code>data.json</code>，下載後上傳至 GitHub repo 根目錄（重新命名為 <strong>data.json</strong>）即可讓所有同仁看到最新內容。</div>
+          <div class="data-actions">
+            <button class="btn-data btn-export" onclick="exportData()">⬇ 下載 data.json</button>
+          </div>
+        </div>
+        <div class="data-mgmt-section">
+          <div class="data-mgmt-title">📥 匯入資料</div>
+          <div class="data-mgmt-desc">從 <code>data.json</code> 檔案匯入，<strong>注意：會覆蓋目前所有資料</strong>。</div>
+          <div class="data-actions">
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
+            <button class="btn-data btn-import" onclick="document.getElementById('import-file').click()">⬆ 選擇 data.json 匯入</button>
+          </div>
+        </div>
+        <div class="data-mgmt-section">
+          <div class="data-mgmt-title">ℹ️ 使用說明</div>
+          <div class="data-mgmt-desc" style="line-height:1.9">
+            <strong>標準工作流程：</strong><br>
+            1. 在後台新增/修改 QA 內容<br>
+            2. 點「下載 data.json」<br>
+            3. 將下載的檔案重新命名為 <code>data.json</code><br>
+            4. 上傳至 GitHub repo 根目錄（覆蓋舊檔）<br>
+            5. 等待約 1-2 分鐘，所有人重新整理後即可看到更新<br><br>
+            <strong>影片嵌入方式（Google Drive）：</strong><br>
+            在 Google Drive 上傳影片 → 右鍵「取得連結」→ 複製後貼入 QA 的影片欄位
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QA MODAL -->
+<div class="modal-overlay" id="qa-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="qa-modal-title">新增 QA</div>
+      <button class="modal-close" onclick="closeQAModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="qa-edit-index">
+      <div class="form-group">
+        <label class="form-label">問題</label>
+        <input class="form-input" id="qa-q-input" placeholder="輸入問題標題">
+      </div>
+      <div class="form-group">
+        <label class="form-label">答案內容</label>
+        <textarea class="form-textarea" id="qa-a-input" placeholder="輸入詳細說明&#10;&#10;支援顏色標記語法：&#10;[[red:文字]]  [[orange:文字]]  [[green:文字]]  [[blue:文字]]&#10;&#10;支援連結語法：&#10;[[link:網址|顯示文字]]"></textarea>
+        <div class="color-preview-note">
+          顏色標記：<span class="color-chip chip-red"></span>[[red:]] &nbsp;
+          <span class="color-chip chip-orange"></span>[[orange:]] &nbsp;
+          <span class="color-chip chip-green"></span>[[green:]] &nbsp;
+          <span class="color-chip chip-blue"></span>[[blue:]]
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">標籤顏色</label>
+          <select class="form-select" id="qa-tag-color">
+            <option value="">無標籤</option>
+            <option value="red">🔴 紅色（重要）</option>
+            <option value="yellow">🟡 黃色（注意）</option>
+            <option value="green">🟢 綠色（正常）</option>
+            <option value="blue">🔵 藍色（資訊）</option>
+            <option value="purple">🟣 紫色（補充）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">標籤文字</label>
+          <input class="form-input" id="qa-tag-text" placeholder="例：緊急 / 常見問題">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">圖片網址（選填，可多張，換行分隔）</label>
+        <textarea class="form-textarea" id="qa-images-input" placeholder="https://... （每行一張圖）" style="min-height:70px"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">影片連結（選填，Google Drive 連結，換行分隔）</label>
+        <textarea class="form-textarea" id="qa-videos-input" placeholder="https://drive.google.com/..." style="min-height:70px"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">相關連結（選填，格式：網址|顯示文字，換行分隔）</label>
+        <textarea class="form-textarea" id="qa-links-input" placeholder="https://...|點此查看文件" style="min-height:70px"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="closeQAModal()">取消</button>
+        <button class="btn-primary" onclick="saveQA()">儲存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA STORE ───────────────────────────────────────────────────────────────
+const ADMIN_PASSWORD = '1234';
+const DATA_URL = './data.json';
+
+let db = {
+  marquee: '',
+  categories: [],
+  items: []
+};
+
+let currentCatId = null;
+let editingQAIndex = null;
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const res = await fetch(DATA_URL + '?t=' + Date.now());
+    if (res.ok) {
+      db = await res.json();
+    }
+  } catch(e) {
+    // no data.json yet, use defaults
+    db = getDefaultData();
+  }
+  // merge localStorage edits
+  const local = localStorage.getItem('avis_kb_data');
+  if (local) {
+    try { db = JSON.parse(local); } catch(e) {}
+  }
+  renderAll();
+}
+
+function getDefaultData() {
+  return {
+    marquee: '歡迎使用 AVIS 艾維士客服知識庫，如有任何問題請聯絡車管副理 吳富超 0963-553-560',
+    categories: [
+      { id: 'c1', icon: '🚗', name: '代駕服務資訊' },
+      { id: 'c2', icon: '💰', name: '費用與價格表' },
+      { id: 'c3', icon: '🔧', name: '車輛異常處理' },
+      { id: 'c4', icon: '💻', name: '系統操作教學' },
+      { id: 'c5', icon: '🎬', name: '教育訓練影片' },
+      { id: 'c6', icon: '📄', name: '其他參考資料' }
+    ],
+    items: [
+      {
+        id: 'q1', catId: 'c1',
+        q: '一般預定車輛需提前多少小時？',
+        a: '一般日預定時間為服務時間前 [[red:36 小時]]。\n\n三天（含）以上之連續假日，預定時間為服務時間前 [[red:120 小時]]，依行政院人事行政總處公告為主。\n\n農曆春節預定時間同樣為 [[red:120 小時]]。',
+        tag: { color: 'blue', text: '預約規則' },
+        images: [], videos: [], links: []
+      },
+      {
+        id: 'q2', catId: 'c1',
+        q: '取消費用如何計算？',
+        a: '取消時間在服務時間前 4 小時以上：[[green:不收費]]\n\n取消費用（用車時間前 4 小時以內）：[[red:原車資 100%]]\n\n取消費用（用車時間前 2 小時以內）：[[red:原車資 100%]]',
+        tag: { color: 'yellow', text: '注意' },
+        images: [], videos: [], links: []
+      },
+      {
+        id: 'q3', catId: 'c1',
+        q: '農曆節假日加費說明',
+        a: '農曆年節（除夕至初五）、元旦、清明、端午、中秋連假（依行政院人事行政總處公告日期），每趟次加費：\n\n機場接送 / 點到點：[[red:650 元/趟]]\n\n計時包車：[[red:租金 15%]]',
+        tag: { color: 'red', text: '重要' },
+        images: [], videos: [], links: []
+      },
+      {
+        id: 'q4', catId: 'c2',
+        q: '代駕散客價格區域如何劃分？',
+        a: '■ 1 人乘車（L組/K組）\n\nNovotel & THSR：Novotel Taipei and Taiwan High Speed Rail\n\nZone 1：基隆、台北、新北、桃園、新竹（約 60 km）\nZone 2：宜蘭、苗栗、台中、彰化、南投（約 150 km）→ K組客戶價 [[blue:2,000 NTD]]\nZone 3：雲林、嘉義、台南、高雄（約 250 km）→ K組客戶價 [[blue:5,000 NTD]]\nZone 4：花蓮、台東、屏東（約 300 km）→ K組客戶價 [[blue:5,600 NTD]]\n\n■ 2 人以上共乘（L組/K組）\n\nZone 2：K組 [[blue:1,000 NTD]]\nZone 3：K組 [[blue:4,000 NTD]]\nZone 4：K組 [[blue:4,600 NTD]]',
+        tag: { color: 'blue', text: '價格表' },
+        images: [], videos: [], links: []
+      },
+      {
+        id: 'q5', catId: 'c2',
+        q: '額外等候費用（各組別）',
+        a: '（機接或點到點）客戶要求司機報到後額外等候費用：\n\nH組：[[blue:450/小時]]\nL組：[[blue:650/小時]]\nP組：[[blue:850/小時]]\nK組：[[blue:650/小時]]\nV組：[[blue:750/小時]]\nW組：[[blue:1,100/小時]]\n\n計時包車等候費用另計，請參考包車費率。',
+        tag: { color: 'blue', text: '費率' },
+        images: [], videos: [], links: []
+      },
+      {
+        id: 'q6', catId: 'c3',
+        q: '客戶遇到雨刷或燈泡異常怎麼辦？',
+        a: '若客戶通知雨刷、燈泡異常，考量安全性問題需更換時，[[red:可請客人至車麗屋進行更換]]。\n\n若客來電時間車麗屋已休息，雖有安全性問題，仍提供門市資訊請客白日再自行聯繫處理。\n\n如遇到，[[red:請客人費用部分先行墊付，發票打統編 53799460]]。',
+        tag: { color: 'yellow', text: '注意' },
+        images: [], videos: [], links: []
+      },
+      {
+        id: 'q7', catId: 'c3',
+        q: '車輛需要拖吊時，保養廠如何分流？',
+        a: '[[red:新竹縣以北]]：一律先拖吊至指定保養廠（台北聯騰，表單中第一間廠商）\n\n[[green:新竹縣以南]]：拖吊至該縣市配合保養廠\n\n⚠️ [[orange:車輛沒電需接電則聯繫保險公司即可，不須拖吊]]',
+        tag: { color: 'red', text: '重要' },
+        images: [], videos: [], links: []
+      },
+      {
+        id: 'q8', catId: 'c4',
+        q: 'AST 系統如何查看服務軌跡？',
+        a: '步驟一：進入訂單查詢頁面\n1. 進入 AST 首頁後點選「訂單管理」\n2. 左側功能選擇「訂單查詢」\n3. 輸入欲查詢訂單編號\n4. 按下搜尋，即可帶出欲查詢訂單列\n\n步驟二：查看服務軌跡\n1. 在訂單列最右側點選「[[blue:服務軌跡]]」按鈕\n2. 進入服務軌跡頁面\n3. 找到最下方一筆，點選「查看地址」\n4. 即可判斷司機是否在欲接客人的範圍',
+        tag: { color: 'blue', text: '系統教學' },
+        images: [], videos: [], links: []
+      }
+    ]
+  };
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function renderAll() {
+  renderMarquee();
+  renderSidebar();
+  if (db.categories.length > 0) {
+    selectCategory(db.categories[0].id);
+  }
+}
+
+function renderMarquee() {
+  const bar = document.getElementById('marquee-bar');
+  const text = document.getElementById('marquee-text');
+  if (db.marquee && db.marquee.trim()) {
+    text.textContent = db.marquee;
+    bar.style.display = 'block';
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function renderSidebar() {
+  const list = document.getElementById('sidebar-list');
+  list.innerHTML = db.categories.map(cat => {
+    const count = db.items.filter(i => i.catId === cat.id).length;
+    return '<div class="sidebar-item' + (cat.id === currentCatId ? ' active' : '') + '" onclick="selectCategory(\'' + cat.id + '\')">' +
+      '<span class="sidebar-icon">' + (cat.icon || '📁') + '</span>' +
+      '<span>' + cat.name + '</span>' +
+      '<span class="sidebar-count">' + count + '</span>' +
+      '</div>';
+  }).join('');
+}
+
+function selectCategory(catId) {
+  currentCatId = catId;
+  renderSidebar();
+  renderContent(catId);
+}
+
+function renderContent(catId) {
+  const cat = db.categories.find(c => c.id === catId);
+  const items = db.items.filter(i => i.catId === catId);
+  const area = document.getElementById('content-area');
+
+  if (!cat) { area.innerHTML = ''; return; }
+
+  let html = '<div class="page-header">' +
+    '<div class="page-title">' + (cat.icon || '📁') + ' ' + cat.name + '</div>' +
+    '<div class="page-subtitle">' + items.length + ' 個問題</div>' +
+    '</div>';
+
+  if (items.length === 0) {
+    html += '<div class="empty-state">' +
+      '<div class="empty-icon">📭</div>' +
+      '<div class="empty-title">此分類尚無內容</div>' +
+      '<div class="empty-sub">請至後台新增 QA 項目</div>' +
+      '</div>';
+  } else {
+    html += '<div class="qa-section">';
+    items.forEach(item => {
+      html += renderQACard(item);
+    });
+    html += '</div>';
+  }
+  area.innerHTML = html;
+}
+
+function renderQACard(item) {
+  let tagsHtml = '';
+  if (item.tag && item.tag.color && item.tag.text) {
+    tagsHtml = '<div class="qa-tags"><span class="qa-tag tag-' + item.tag.color + '">' + item.tag.text + '</span></div>';
+  }
+
+  let mediaHtml = '';
+  if ((item.images && item.images.length) || (item.videos && item.videos.length) || (item.links && item.links.length)) {
+    mediaHtml = '<div class="qa-media">';
+    if (item.images) item.images.filter(u => u).forEach(url => {
+      mediaHtml += '<img class="qa-image" src="' + url + '" onerror="this.style.display=\'none\'">';
+    });
+    if (item.videos) item.videos.filter(u => u).forEach(url => {
+      const embedUrl = convertDriveUrl(url);
+      mediaHtml += '<div class="qa-video-embed"><iframe src="' + embedUrl + '" allowfullscreen></iframe></div>';
+    });
+    if (item.links) item.links.filter(u => u).forEach(entry => {
+      const parts = entry.split('|');
+      const href = parts[0].trim();
+      const label = parts[1] ? parts[1].trim() : href;
+      mediaHtml += '<a class="qa-link-btn" href="' + href + '" target="_blank" rel="noopener">🔗 ' + label + '</a>';
+    });
+    mediaHtml += '</div>';
+  }
+
+  return '<div class="qa-card" id="qa-' + item.id + '">' +
+    '<div class="qa-q" onclick="toggleQA(\'' + item.id + '\')">' +
+    '<span class="qa-q-marker">Q</span>' +
+    '<div class="qa-q-text">' + item.q + tagsHtml + '</div>' +
+    '<span class="qa-chevron">▼</span>' +
+    '</div>' +
+    '<div class="qa-a">' +
+    '<div class="qa-a-content">' + parseContent(item.a) + '</div>' +
+    mediaHtml +
+    '</div>' +
+    '</div>';
+}
+
+function toggleQA(id) {
+  const card = document.getElementById('qa-' + id);
+  card.classList.toggle('open');
+}
+
+function parseContent(text) {
+  if (!text) return '';
+  let t = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  // color tags
+  t = t.replace(/\[\[red:(.*?)\]\]/g, '<span class="hl-red">$1</span>');
+  t = t.replace(/\[\[orange:(.*?)\]\]/g, '<span class="hl-orange">$1</span>');
+  t = t.replace(/\[\[green:(.*?)\]\]/g, '<span class="hl-green">$1</span>');
+  t = t.replace(/\[\[blue:(.*?)\]\]/g, '<span class="hl-blue">$1</span>');
+  // links
+  t = t.replace(/\[\[link:(.*?)\|(.*?)\]\]/g, '<a href="$1" target="_blank" rel="noopener">$2</a>');
+  // newlines
+  t = t.replace(/\n/g, '<br>');
+  return t;
+}
+
+function convertDriveUrl(url) {
+  // Convert Google Drive share link to embed
+  const m = url.match(/\/file\/d\/([^/]+)/);
+  if (m) return 'https://drive.google.com/file/d/' + m[1] + '/preview';
+  return url;
+}
+
+// ─── SEARCH ───────────────────────────────────────────────────────────────────
+const searchInput = document.getElementById('search-input');
+const searchPanel = document.getElementById('search-results-panel');
+
+searchInput.addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  if (!q) { searchPanel.style.display = 'none'; return; }
+  const results = db.items.filter(i =>
+    i.q.toLowerCase().includes(q) || (i.a && i.a.toLowerCase().includes(q))
+  ).slice(0, 10);
+
+  if (results.length === 0) {
+    searchPanel.innerHTML = '<div class="sr-empty">沒有符合的結果</div>';
+  } else {
+    searchPanel.innerHTML = results.map(item => {
+      const cat = db.categories.find(c => c.id === item.catId);
+      const catName = cat ? cat.name : '';
+      const highlighted = item.q.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<span class="sr-highlight">$1</span>');
+      return '<div class="search-result-item" onclick="jumpToQA(\'' + item.id + '\', \'' + item.catId + '\')">' +
+        '<div class="sr-category">' + catName + '</div>' +
+        '<div class="sr-question">' + highlighted + '</div>' +
+        '</div>';
+    }).join('');
+  }
+  searchPanel.style.display = 'block';
+});
+
+document.addEventListener('click', function(e) {
+  if (!searchInput.contains(e.target) && !searchPanel.contains(e.target)) {
+    searchPanel.style.display = 'none';
+  }
+});
+
+function jumpToQA(itemId, catId) {
+  searchPanel.style.display = 'none';
+  searchInput.value = '';
+  selectCategory(catId);
+  setTimeout(() => {
+    const el = document.getElementById('qa-' + itemId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.add('open');
+      el.style.outline = '2px solid var(--red)';
+      setTimeout(() => { el.style.outline = ''; }, 1500);
+    }
+  }, 100);
+}
+
+// ─── ADMIN ────────────────────────────────────────────────────────────────────
+function openAdminLogin() {
+  document.getElementById('pw-overlay').classList.add('open');
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-error').textContent = '';
+  setTimeout(() => document.getElementById('pw-input').focus(), 100);
+}
+
+function checkPassword() {
+  const val = document.getElementById('pw-input').value;
+  if (val === ADMIN_PASSWORD) {
+    document.getElementById('pw-overlay').classList.remove('open');
+    openAdmin();
+  } else {
+    document.getElementById('pw-error').textContent = '密碼錯誤，請再試一次';
+  }
+}
+
+function openAdmin() {
+  document.getElementById('admin-panel').classList.add('open');
+  renderAdminCatList();
+  if (db.categories.length > 0) selectAdminCat(db.categories[0].id);
+  document.getElementById('marquee-input').value = db.marquee || '';
+}
+
+function exitAdmin() {
+  document.getElementById('admin-panel').classList.remove('open');
+  saveToLocal();
+  renderAll();
+}
+
+function switchAdminTab(tab, btn) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'cat') renderCatEditList();
+}
+
+// ─── ADMIN CATEGORIES ─────────────────────────────────────────────────────────
+let adminCatId = null;
+
+function renderAdminCatList() {
+  const list = document.getElementById('admin-cat-list');
+  list.innerHTML = db.categories.map(cat => {
+    const count = db.items.filter(i => i.catId === cat.id).length;
+    return '<div class="admin-cat-item' + (cat.id === adminCatId ? ' active' : '') + '" onclick="selectAdminCat(\'' + cat.id + '\')">' +
+      (cat.icon || '📁') + ' ' + cat.name +
+      '<span class="admin-cat-count">' + count + '</span>' +
+      '</div>';
+  }).join('');
+}
+
+function selectAdminCat(catId) {
+  adminCatId = catId;
+  renderAdminCatList();
+  renderAdminQAList();
+}
+
+function addCategory() {
+  const name = prompt('請輸入新分類名稱：');
+  if (!name || !name.trim()) return;
+  const icon = prompt('請輸入分類圖示（emoji）：', '📁') || '📁';
+  const newCat = { id: 'c' + Date.now(), icon: icon.trim(), name: name.trim() };
+  db.categories.push(newCat);
+  saveToLocal();
+  renderAdminCatList();
+  selectAdminCat(newCat.id);
+}
+
+function renderCatEditList() {
+  const list = document.getElementById('cat-edit-list');
+  list.innerHTML = db.categories.map((cat, i) => {
+    return '<div class="admin-cat-edit-row">' +
+      '<input class="cat-edit-input" style="max-width:60px" value="' + (cat.icon || '📁') + '" onchange="updateCat(' + i + ', \'icon\', this.value)">' +
+      '<input class="cat-edit-input" value="' + cat.name + '" onchange="updateCat(' + i + ', \'name\', this.value)">' +
+      '<button class="btn-move" onclick="moveCat(' + i + ', -1)" ' + (i===0?'disabled':'') + '>↑</button>' +
+      '<button class="btn-move" onclick="moveCat(' + i + ', 1)" ' + (i===db.categories.length-1?'disabled':'') + '>↓</button>' +
+      '<button class="btn-delete" onclick="deleteCat(' + i + ')">刪除</button>' +
+      '</div>';
+  }).join('');
+}
+
+function updateCat(i, field, val) {
+  db.categories[i][field] = val;
+  saveToLocal();
+  renderAdminCatList();
+}
+
+function moveCat(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= db.categories.length) return;
+  [db.categories[i], db.categories[j]] = [db.categories[j], db.categories[i]];
+  saveToLocal();
+  renderCatEditList();
+  renderAdminCatList();
+}
+
+function deleteCat(i) {
+  const cat = db.categories[i];
+  if (!confirm('確定刪除「' + cat.name + '」分類？此分類下的 QA 也會一起刪除！')) return;
+  db.items = db.items.filter(item => item.catId !== cat.id);
+  db.categories.splice(i, 1);
+  saveToLocal();
+  renderCatEditList();
+  renderAdminCatList();
+  if (db.categories.length > 0) selectAdminCat(db.categories[0].id);
+}
+
+// ─── ADMIN QA ─────────────────────────────────────────────────────────────────
+function renderAdminQAList() {
+  const cat = db.categories.find(c => c.id === adminCatId);
+  document.getElementById('admin-cat-title').textContent = cat ? cat.name : '請選擇分類';
+  const items = db.items.filter(i => i.catId === adminCatId);
+  const list = document.getElementById('admin-qa-list');
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:40px 0"><div class="empty-icon">📭</div><div class="empty-title">尚無 QA</div></div>';
+    return;
+  }
+
+  list.innerHTML = items.map((item, localIdx) => {
+    const globalIdx = db.items.indexOf(item);
+    return '<div class="admin-qa-item">' +
+      '<span class="admin-qa-drag">⠿</span>' +
+      '<div class="admin-qa-q">' +
+        item.q +
+        (item.tag && item.tag.text ? '<span class="qa-tag tag-' + item.tag.color + '" style="display:inline-block;margin-left:8px;font-size:10px;padding:1px 6px">' + item.tag.text + '</span>' : '') +
+        '<div class="admin-qa-meta">' +
+          (item.images && item.images.length ? '🖼 ' + item.images.length + '張圖　' : '') +
+          (item.videos && item.videos.length ? '🎬 ' + item.videos.length + '支影片　' : '') +
+          (item.links && item.links.length ? '🔗 ' + item.links.length + '個連結' : '') +
+        '</div>' +
+      '</div>' +
+      '<div class="admin-qa-actions">' +
+        '<button class="btn-move" onclick="moveQA(' + globalIdx + ', -1)">↑</button>' +
+        '<button class="btn-move" onclick="moveQA(' + globalIdx + ', 1)">↓</button>' +
+        '<button class="btn-edit" onclick="openEditQA(' + globalIdx + ')">編輯</button>' +
+        '<button class="btn-delete" onclick="deleteQA(' + globalIdx + ')">刪除</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function moveQA(globalIdx, dir) {
+  const items = db.items;
+  const catId = items[globalIdx].catId;
+  const catItems = items.filter(i => i.catId === catId);
+  const localIdx = catItems.indexOf(items[globalIdx]);
+  const targetLocal = localIdx + dir;
+  if (targetLocal < 0 || targetLocal >= catItems.length) return;
+
+  const targetGlobal = items.indexOf(catItems[targetLocal]);
+  [items[globalIdx], items[targetGlobal]] = [items[targetGlobal], items[globalIdx]];
+  saveToLocal();
+  renderAdminQAList();
+}
+
+function openAddQA() {
+  if (!adminCatId) { showToast('請先選擇分類'); return; }
+  editingQAIndex = null;
+  document.getElementById('qa-modal-title').textContent = '新增 QA';
+  document.getElementById('qa-q-input').value = '';
+  document.getElementById('qa-a-input').value = '';
+  document.getElementById('qa-tag-color').value = '';
+  document.getElementById('qa-tag-text').value = '';
+  document.getElementById('qa-images-input').value = '';
+  document.getElementById('qa-videos-input').value = '';
+  document.getElementById('qa-links-input').value = '';
+  document.getElementById('qa-modal').classList.add('open');
+}
+
+function openEditQA(globalIdx) {
+  editingQAIndex = globalIdx;
+  const item = db.items[globalIdx];
+  document.getElementById('qa-modal-title').textContent = '編輯 QA';
+  document.getElementById('qa-q-input').value = item.q;
+  document.getElementById('qa-a-input').value = item.a;
+  document.getElementById('qa-tag-color').value = item.tag ? item.tag.color : '';
+  document.getElementById('qa-tag-text').value = item.tag ? item.tag.text : '';
+  document.getElementById('qa-images-input').value = (item.images || []).join('\n');
+  document.getElementById('qa-videos-input').value = (item.videos || []).join('\n');
+  document.getElementById('qa-links-input').value = (item.links || []).join('\n');
+  document.getElementById('qa-modal').classList.add('open');
+}
+
+function closeQAModal() {
+  document.getElementById('qa-modal').classList.remove('open');
+}
+
+function saveQA() {
+  const q = document.getElementById('qa-q-input').value.trim();
+  const a = document.getElementById('qa-a-input').value.trim();
+  if (!q) { showToast('請輸入問題'); return; }
+
+  const tagColor = document.getElementById('qa-tag-color').value;
+  const tagText = document.getElementById('qa-tag-text').value.trim();
+  const images = document.getElementById('qa-images-input').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const videos = document.getElementById('qa-videos-input').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const links = document.getElementById('qa-links-input').value.split('\n').map(s => s.trim()).filter(Boolean);
+
+  const item = {
+    id: editingQAIndex !== null ? db.items[editingQAIndex].id : 'q' + Date.now(),
+    catId: editingQAIndex !== null ? db.items[editingQAIndex].catId : adminCatId,
+    q, a,
+    tag: tagColor ? { color: tagColor, text: tagText } : null,
+    images, videos, links
+  };
+
+  if (editingQAIndex !== null) {
+    db.items[editingQAIndex] = item;
+  } else {
+    db.items.push(item);
+  }
+
+  saveToLocal();
+  closeQAModal();
+  renderAdminQAList();
+  renderAdminCatList();
+  showToast('✅ 已儲存');
+}
+
+function deleteQA(globalIdx) {
+  if (!confirm('確定刪除此 QA？')) return;
+  db.items.splice(globalIdx, 1);
+  saveToLocal();
+  renderAdminQAList();
+  renderAdminCatList();
+  showToast('🗑 已刪除');
+}
+
+// ─── MARQUEE ──────────────────────────────────────────────────────────────────
+function saveMarquee() {
+  db.marquee = document.getElementById('marquee-input').value;
+  saveToLocal();
+  showToast('✅ 跑馬燈已儲存');
+}
+
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+function saveToLocal() {
+  localStorage.setItem('avis_kb_data', JSON.stringify(db));
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(db, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'data.json';
+  a.click();
+  showToast('📥 已下載 data.json');
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.categories || !imported.items) throw new Error('格式錯誤');
+      db = imported;
+      saveToLocal();
+      renderAdminCatList();
+      if (db.categories.length > 0) selectAdminCat(db.categories[0].id);
+      document.getElementById('marquee-input').value = db.marquee || '';
+      showToast('✅ 已匯入 ' + db.items.length + ' 筆資料');
+    } catch(err) {
+      showToast('❌ 匯入失敗：格式不正確');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ─── START ────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
