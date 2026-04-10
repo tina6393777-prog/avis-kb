@@ -799,6 +799,37 @@ body {
   100% { transform: translateX(-100%); }
 }
 
+/* ── COLOR TOOLBAR ── */
+.color-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.color-toolbar-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+.ctb-btn {
+  border: none;
+  border-radius: 5px;
+  padding: 4px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity .15s, transform .1s;
+}
+.ctb-btn:active { transform: scale(.93); }
+.ctb-red    { background: #fee2e2; color: #991b1b; }
+.ctb-orange { background: #ffedd5; color: #9a3412; }
+.ctb-green  { background: #d1fae5; color: #065f46; }
+.ctb-blue   { background: #dbeafe; color: #1e40af; }
+.ctb-clear  { background: var(--border-light); color: var(--text-muted); font-weight: 400; }
+.ctb-btn:hover { opacity: .8; }
+
 /* link pair row in QA modal */
 .qa-link-pair-row {
   display: flex;
@@ -823,6 +854,39 @@ body {
   transition: background .15s;
 }
 .btn-link-del:hover { background: #fecaca; }
+
+/* color toolbar */
+.color-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+.color-toolbar-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-right: 2px;
+  white-space: nowrap;
+}
+.ctb-btn {
+  border: none;
+  border-radius: 5px;
+  padding: 4px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity .15s, transform .1s;
+  letter-spacing: 0.3px;
+}
+.ctb-btn:hover { opacity: 0.82; transform: scale(1.05); }
+.ctb-btn:active { transform: scale(0.97); }
+.ctb-red    { background: #fee2e2; color: #991b1b; }
+.ctb-orange { background: #ffedd5; color: #9a3412; }
+.ctb-green  { background: #d1fae5; color: #065f46; }
+.ctb-blue   { background: #dbeafe; color: #1e40af; }
+.ctb-clear  { background: var(--border-light); color: var(--text-muted); font-weight: 500; }
 .color-preview-note {
   font-size: 11px;
   color: var(--text-muted);
@@ -1159,13 +1223,15 @@ body {
       </div>
       <div class="form-group">
         <label class="form-label">答案內容</label>
-        <textarea class="form-textarea" id="qa-a-input" placeholder="輸入詳細說明&#10;&#10;支援顏色標記語法：&#10;[[red:文字]]  [[orange:文字]]  [[green:文字]]  [[blue:文字]]&#10;&#10;支援連結語法：&#10;[[link:網址|顯示文字]]"></textarea>
-        <div class="color-preview-note">
-          顏色標記：<span class="color-chip chip-red"></span>[[red:]] &nbsp;
-          <span class="color-chip chip-orange"></span>[[orange:]] &nbsp;
-          <span class="color-chip chip-green"></span>[[green:]] &nbsp;
-          <span class="color-chip chip-blue"></span>[[blue:]]
+        <div class="color-toolbar">
+          <span class="color-toolbar-label">選取文字後標色：</span>
+          <button type="button" class="ctb-btn ctb-red"   onclick="wrapColor('red')">紅</button>
+          <button type="button" class="ctb-btn ctb-orange" onclick="wrapColor('orange')">橘</button>
+          <button type="button" class="ctb-btn ctb-green"  onclick="wrapColor('green')">綠</button>
+          <button type="button" class="ctb-btn ctb-blue"   onclick="wrapColor('blue')">藍</button>
+          <button type="button" class="ctb-btn ctb-clear"  onclick="wrapColor('clear')">✕ 移除</button>
         </div>
+        <textarea class="form-textarea" id="qa-a-input" placeholder="輸入詳細說明"></textarea>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -1667,6 +1733,73 @@ function deleteCat(i) {
   renderCatEditList();
   renderAdminCatList();
   if (db.categories.length > 0) selectAdminCat(db.categories[0].id);
+}
+
+// ─── COLOR WRAP ───────────────────────────────────────────────────────────────
+function wrapColor(color) {
+  const ta = document.getElementById('qa-a-input');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const text = ta.value;
+  const selected = text.substring(start, end);
+
+  if (!selected) { showToast('請先選取要標色的文字'); return; }
+
+  let replacement;
+  if (color === 'clear') {
+    // 移除已有的 [[color:...]] 包裹
+    replacement = selected.replace(/\[\[(red|orange|green|blue):(.*?)\]\]/gs, '$2');
+  } else {
+    // 若選取的文字本身已是某個顏色標記，先剝掉再換色
+    const inner = selected.replace(/^\[\[(red|orange|green|blue):(.*)\]\]$/s, '$2');
+    replacement = '[[' + color + ':' + inner + ']]';
+  }
+
+  ta.value = text.substring(0, start) + replacement + text.substring(end);
+  // 恢復選取範圍
+  ta.selectionStart = start;
+  ta.selectionEnd = start + replacement.length;
+  ta.focus();
+}
+
+// ─── COLOR WRAP ───────────────────────────────────────────────────────────────
+function wrapColor(color) {
+  const ta = document.getElementById('qa-a-input');
+  const start = ta.selectionStart;
+  const end   = ta.selectionEnd;
+  const full  = ta.value;
+  const selected = full.substring(start, end);
+
+  if (!selected) { showToast('請先選取要標色的文字'); return; }
+
+  // If "clear": strip any [[xxx:...]] wrapping from the selection
+  if (color === 'clear') {
+    const stripped = selected.replace(/\[\[(red|orange|green|blue):([\s\S]*?)\]\]/g, '$2');
+    ta.value = full.substring(0, start) + stripped + full.substring(end);
+    ta.selectionStart = start;
+    ta.selectionEnd   = start + stripped.length;
+    ta.focus();
+    return;
+  }
+
+  // If selection is already wrapped in THIS color → unwrap it
+  const pattern = new RegExp('^\\[\\[' + color + ':([\\s\\S]*)\\]\\]$');
+  if (pattern.test(selected)) {
+    const inner = selected.replace(pattern, '$1');
+    ta.value = full.substring(0, start) + inner + full.substring(end);
+    ta.selectionStart = start;
+    ta.selectionEnd   = start + inner.length;
+    ta.focus();
+    return;
+  }
+
+  // Wrap with new color (strip any existing color first)
+  const stripped = selected.replace(/\[\[(red|orange|green|blue):([\s\S]*?)\]\]/g, '$2');
+  const wrapped  = '[[' + color + ':' + stripped + ']]';
+  ta.value = full.substring(0, start) + wrapped + full.substring(end);
+  ta.selectionStart = start;
+  ta.selectionEnd   = start + wrapped.length;
+  ta.focus();
 }
 
 // ─── QA LINK PAIRS ────────────────────────────────────────────────────────────
