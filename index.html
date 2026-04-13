@@ -1296,7 +1296,7 @@ body {
 </div>
 
 <!-- TABLE PICKER MODAL -->
-<div class="modal-overlay" id="table-picker-modal">
+<div class="modal-overlay" id="table-picker-modal" style="z-index:1200">
   <div class="modal" style="max-width:380px">
     <div class="modal-header">
       <div class="modal-title">⊞ 插入表格</div>
@@ -2010,8 +2010,8 @@ function insertTable() {
   const pos = ta.selectionStart;
   ta.value = ta.value.substring(0, pos) + tableText + ta.value.substring(pos);
   ta.selectionStart = ta.selectionEnd = pos + tableText.length;
-  ta.focus();
   closeTablePicker();
+  setTimeout(() => { ta.focus(); }, 50);
   showToast('✅ 表格已插入，請編輯各欄位內容');
 }
 
