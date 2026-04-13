@@ -1354,6 +1354,13 @@ body {
       </div>
       <div class="form-row">
         <div class="form-group">
+          <label class="form-label">所屬分類</label>
+          <select class="form-select" id="qa-cat-select"></select>
+        </div>
+        <div class="form-group" style="visibility:hidden"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label class="form-label">標籤顏色</label>
           <select class="form-select" id="qa-tag-color">
             <option value="">無標籤</option>
@@ -2016,34 +2023,58 @@ function insertTable() {
 }
 
 // ─── IMAGE UPLOAD ─────────────────────────────────────────────────────────────
-let _qaImages = []; // array of base64 data URLs
+let _qaImages = []; // array of compressed base64 data URLs
 
-function handleImgUpload(input) {
-  const files = Array.from(input.files);
-  if (!files.length) return;
-  files.forEach(file => {
-    if (!file.type.startsWith('image/')) return;
+const IMG_MAX_PX = 1200;   // 最長邊上限（px）
+const IMG_QUALITY = 0.75;  // JPEG 壓縮品質（0~1）
+
+function compressImage(file) {
+  return new Promise(resolve => {
     const reader = new FileReader();
     reader.onload = e => {
-      _qaImages.push(e.target.result);
-      renderQAImagePreview();
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        // 等比縮放，最長邊不超過 IMG_MAX_PX
+        if (w > IMG_MAX_PX || h > IMG_MAX_PX) {
+          if (w >= h) { h = Math.round(h * IMG_MAX_PX / w); w = IMG_MAX_PX; }
+          else        { w = Math.round(w * IMG_MAX_PX / h); h = IMG_MAX_PX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', IMG_QUALITY));
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   });
+}
+
+async function handleImgUpload(input) {
+  const files = Array.from(input.files).filter(f => f.type.startsWith('image/'));
+  if (!files.length) return;
+  showToast('⏳ 圖片處理中…');
+  for (const file of files) {
+    const compressed = await compressImage(file);
+    _qaImages.push(compressed);
+    renderQAImagePreview();
+  }
+  showToast('✅ 圖片上傳完成');
   input.value = '';
 }
 
-function handleImgDrop(e) {
+async function handleImgDrop(e) {
   e.preventDefault();
   const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = ev => {
-      _qaImages.push(ev.target.result);
-      renderQAImagePreview();
-    };
-    reader.readAsDataURL(file);
-  });
+  if (!files.length) return;
+  showToast('⏳ 圖片處理中…');
+  for (const file of files) {
+    const compressed = await compressImage(file);
+    _qaImages.push(compressed);
+    renderQAImagePreview();
+  }
+  showToast('✅ 圖片上傳完成');
 }
 
 function removeQAImage(i) {
@@ -2142,6 +2173,15 @@ function moveQA(globalIdx, dir) {
   renderAdminQAList();
 }
 
+function populateCatSelect(selectedCatId) {
+  const sel = document.getElementById('qa-cat-select');
+  sel.innerHTML = db.categories.map(cat =>
+    '<option value="' + cat.id + '"' + (cat.id === selectedCatId ? ' selected' : '') + '>' +
+    (cat.icon || '📁') + ' ' + cat.name +
+    '</option>'
+  ).join('');
+}
+
 function openAddQA() {
   if (!adminCatId) { showToast('請先選擇分類'); return; }
   editingQAIndex = null;
@@ -2154,6 +2194,7 @@ function openAddQA() {
   renderQALinksList();
   _qaImages = [];
   renderQAImagePreview();
+  populateCatSelect(adminCatId);
   document.getElementById('qa-modal').classList.add('open');
 }
 
@@ -2172,6 +2213,7 @@ function openEditQA(globalIdx) {
   renderQALinksList();
   _qaImages = item.images ? [...item.images] : [];
   renderQAImagePreview();
+  populateCatSelect(item.catId);
   document.getElementById('qa-modal').classList.add('open');
 }
 
@@ -2193,7 +2235,7 @@ function saveQA() {
 
   const item = {
     id: editingQAIndex !== null ? db.items[editingQAIndex].id : 'q' + Date.now(),
-    catId: editingQAIndex !== null ? db.items[editingQAIndex].catId : adminCatId,
+    catId: document.getElementById('qa-cat-select').value || (editingQAIndex !== null ? db.items[editingQAIndex].catId : adminCatId),
     q, a,
     tag: tagColor ? { color: tagColor, text: tagText } : null,
     images: [..._qaImages], videos: [], links
