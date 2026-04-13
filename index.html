@@ -859,6 +859,33 @@ body {
 }
 .img-preview-del:hover { background: var(--red); }
 
+.ctb-table  { background: #ede9fe; color: #5b21b6; }
+.ctb-table:hover { opacity: .8; }
+
+/* rendered table in QA answer */
+.qa-a-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 10px 0;
+  font-size: 13px;
+}
+.qa-a-content th {
+  background: var(--navy);
+  color: #fff;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid var(--navy-soft);
+}
+.qa-a-content td {
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.6;
+}
+.qa-a-content tr:nth-child(even) td { background: var(--bg); }
+.qa-a-content tr:hover td { background: var(--red-light); }
+
 /* ── COLOR TOOLBAR ── */
 .color-toolbar {
   display: flex;
@@ -1268,6 +1295,36 @@ body {
   </div>
 </div>
 
+<!-- TABLE PICKER MODAL -->
+<div class="modal-overlay" id="table-picker-modal">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-header">
+      <div class="modal-title">⊞ 插入表格</div>
+      <button class="modal-close" onclick="closeTablePicker()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row" style="margin-bottom:16px">
+        <div class="form-group">
+          <label class="form-label">欄數（最多 8）</label>
+          <input class="form-input" id="tbl-cols" type="number" min="1" max="8" value="3" oninput="renderTablePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">列數（含標題列）</label>
+          <input class="form-input" id="tbl-rows" type="number" min="2" max="20" value="3" oninput="renderTablePreview()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">預覽</label>
+        <div id="tbl-preview" style="overflow-x:auto;border:1px solid var(--border);border-radius:8px;padding:10px;background:var(--bg)"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="closeTablePicker()">取消</button>
+        <button class="btn-primary" onclick="insertTable()">插入</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- QA MODAL -->
 <div class="modal-overlay" id="qa-modal">
   <div class="modal">
@@ -1290,6 +1347,8 @@ body {
           <button type="button" class="ctb-btn ctb-green"  onclick="wrapColor('green')">綠</button>
           <button type="button" class="ctb-btn ctb-blue"   onclick="wrapColor('blue')">藍</button>
           <button type="button" class="ctb-btn ctb-clear"  onclick="wrapColor('clear')">✕ 移除</button>
+          <span style="width:1px;height:16px;background:var(--border);margin:0 2px;display:inline-block;vertical-align:middle"></span>
+          <button type="button" class="ctb-btn ctb-table" onclick="openTablePicker()">⊞ 插入表格</button>
         </div>
         <textarea class="form-textarea" id="qa-a-input" placeholder="輸入詳細說明"></textarea>
       </div>
@@ -1558,20 +1617,48 @@ function toggleQA(id) {
 
 function parseContent(text) {
   if (!text) return '';
-  let t = text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-  // color tags
-  t = t.replace(/\[\[red:(.*?)\]\]/g, '<span class="hl-red">$1</span>');
-  t = t.replace(/\[\[orange:(.*?)\]\]/g, '<span class="hl-orange">$1</span>');
-  t = t.replace(/\[\[green:(.*?)\]\]/g, '<span class="hl-green">$1</span>');
-  t = t.replace(/\[\[blue:(.*?)\]\]/g, '<span class="hl-blue">$1</span>');
-  // links
-  t = t.replace(/\[\[link:(.*?)\|(.*?)\]\]/g, '<a href="$1" target="_blank" rel="noopener">$2</a>');
-  // newlines
-  t = t.replace(/\n/g, '<br>');
-  return t;
+
+  // ── 先處理表格區塊（在 HTML escape 之前）──
+  // 語法：[[table]] 標題1|標題2|... \n 值1|值2|... \n [[/table]]
+  text = text.replace(/\[\[table\]\]([\s\S]*?)\[\[\/table\]\]/g, function(_, inner) {
+    const rows = inner.trim().split('\n').filter(r => r.trim());
+    if (!rows.length) return '';
+    let html = '<table>';
+    rows.forEach((row, i) => {
+      const cells = row.split('|');
+      if (i === 0) {
+        html += '<tr>' + cells.map(c => '<th>' + escHtml(c.trim()) + '</th>').join('') + '</tr>';
+      } else {
+        html += '<tr>' + cells.map(c => '<td>' + escHtml(c.trim()) + '</td>').join('') + '</tr>';
+      }
+    });
+    html += '</table>';
+    return '\x00TABLE\x00' + html + '\x00ENDTABLE\x00';
+  });
+
+  // ── 其餘文字做 HTML escape ──
+  let parts = text.split(/(\x00TABLE\x00[\s\S]*?\x00ENDTABLE\x00)/);
+  let result = parts.map((p, i) => {
+    if (p.startsWith('\x00TABLE\x00')) {
+      return p.replace(/\x00TABLE\x00/, '').replace(/\x00ENDTABLE\x00/, '');
+    }
+    let t = p
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    t = t.replace(/\[\[red:(.*?)\]\]/gs, '<span class="hl-red">$1</span>');
+    t = t.replace(/\[\[orange:(.*?)\]\]/gs, '<span class="hl-orange">$1</span>');
+    t = t.replace(/\[\[green:(.*?)\]\]/gs, '<span class="hl-green">$1</span>');
+    t = t.replace(/\[\[blue:(.*?)\]\]/gs, '<span class="hl-blue">$1</span>');
+    t = t.replace(/\[\[link:(.*?)\|(.*?)\]\]/g, '<a href="$1" target="_blank" rel="noopener">$2</a>');
+    t = t.replace(/\n/g, '<br>');
+    return t;
+  }).join('');
+  return result;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function convertDriveUrl(url) {
@@ -1872,6 +1959,60 @@ function wrapColor(color) {
   ta.selectionStart = start;
   ta.selectionEnd   = start + wrapped.length;
   ta.focus();
+}
+
+// ─── TABLE PICKER ─────────────────────────────────────────────────────────────
+function openTablePicker() {
+  document.getElementById('tbl-cols').value = 3;
+  document.getElementById('tbl-rows').value = 3;
+  renderTablePreview();
+  document.getElementById('table-picker-modal').classList.add('open');
+}
+
+function closeTablePicker() {
+  document.getElementById('table-picker-modal').classList.remove('open');
+}
+
+function renderTablePreview() {
+  const cols = Math.min(8,  Math.max(1, parseInt(document.getElementById('tbl-cols').value) || 3));
+  const rows = Math.min(20, Math.max(2, parseInt(document.getElementById('tbl-rows').value) || 3));
+  let html = '<table style="border-collapse:collapse;width:100%;font-size:12px">';
+  for (let r = 0; r < rows; r++) {
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) {
+      if (r === 0) {
+        html += '<th style="background:#1a1f2e;color:#fff;padding:5px 8px;border:1px solid #444;text-align:left">標題' + (c+1) + '</th>';
+      } else {
+        html += '<td style="padding:5px 8px;border:1px solid #e5e0d8;color:#666">內容</td>';
+      }
+    }
+    html += '</tr>';
+  }
+  html += '</table>';
+  document.getElementById('tbl-preview').innerHTML = html;
+}
+
+function insertTable() {
+  const cols = Math.min(8,  Math.max(1, parseInt(document.getElementById('tbl-cols').value) || 3));
+  const rows = Math.min(20, Math.max(2, parseInt(document.getElementById('tbl-rows').value) || 3));
+
+  let lines = ['[[table]]'];
+  // header row
+  lines.push(Array.from({length: cols}, (_, i) => '標題' + (i+1)).join('|'));
+  // data rows
+  for (let r = 1; r < rows; r++) {
+    lines.push(Array.from({length: cols}, (_, i) => '內容' + r + '-' + (i+1)).join('|'));
+  }
+  lines.push('[[/table]]');
+  const tableText = '\n' + lines.join('\n') + '\n';
+
+  const ta = document.getElementById('qa-a-input');
+  const pos = ta.selectionStart;
+  ta.value = ta.value.substring(0, pos) + tableText + ta.value.substring(pos);
+  ta.selectionStart = ta.selectionEnd = pos + tableText.length;
+  ta.focus();
+  closeTablePicker();
+  showToast('✅ 表格已插入，請編輯各欄位內容');
 }
 
 // ─── IMAGE UPLOAD ─────────────────────────────────────────────────────────────
