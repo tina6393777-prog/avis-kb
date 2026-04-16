@@ -74,7 +74,11 @@ const sendBtn = document.getElementById('send-btn');
 const clearBtn = document.getElementById('clear-btn');
 let chatHistory = [];
 
-const KNOWLEDGE = `=== AVIS 艾維士 服務據點資料 ===
+const SYSTEM_PROMPT = `你是 AVIS 艾維士（台灣租車／專車司機服務公司）的內部 AI 客服助理，協助同仁查詢內部知識與作業流程。
+風格：親切專業，繁體中文為主，可夾雜英文術語（ETA、SOP、VIP 等），回答簡潔有重點。
+原則：優先根據知識庫回答；知識庫未涵蓋時補充一般常識但加註「AI 補充資訊，請向主管確認」；完全不確定時誠實說明。
+
+=== AVIS 艾維士 服務據點資料 ===
 
 【高雄 2個據點】
 1. 左營高鐵站
@@ -88,16 +92,10 @@ const KNOWLEDGE = `=== AVIS 艾維士 服務據點資料 ===
    營業時間：平日(週一~週四) 09:00-18:00 假日(週五~週日) 09:00-20:00
 
 【台南】
-3. 台南高鐵站
-   地址：台南市歸仁區高鐵一路2號
-   電話：0800-600-601
-   營業時間：08:00-20:00
+3. 台南高鐵站 地址：台南市歸仁區高鐵一路2號 電話：0800-600-601 營業時間：08:00-20:00
 
 【嘉義】
-4. 嘉義高鐵站
-   地址：嘉義縣太保市保鐵七路200號
-   電話：(02) 6620-6620
-   營業時間：09:00-18:00
+4. 嘉義高鐵站 地址：嘉義縣太保市保鐵七路200號 電話：(02) 6620-6620 營業時間：09:00-18:00
 
 【台中】
 5. 台中建國服務站 地址：台中市西區建國路71號 電話：(02) 6620-6620 營業時間：每日 08:30-20:30
@@ -112,10 +110,10 @@ const KNOWLEDGE = `=== AVIS 艾維士 服務據點資料 ===
 
 【台北北部】
 10. 台北士林服務站 地址：台北市北投區承德路六段80號 電話：(02) 6620-6620 營業時間：平日09:00-18:00 假日09:00-20:00
-11. 台北內湖服務站 地址：台北市內湖區民權東路六段13-9號 電話：(02) 6620-6620 營業時間：每日 08:30-20:30
-12. 松山機場站 地址：台北市松山區復興北路497號 電話：02-6620-6620 營業時間：每日 08:00-20:00
-13. 台北南港服務站 地址：台北市南港區市民大道七段396號 電話：(02) 6620-6620 營業時間：每日 08:30-20:30
-14. 板橋服務站 地址：新北市板橋區板新路202號 電話：02-6620-6620 營業時間：每日 08:00-20:00
+11. 台北內湖服務站 地址：台北市內湖區民權東路六段13-9號 電話：(02) 6620-6620 營業時間：每日08:30-20:30
+12. 松山機場站 地址：台北市松山區復興北路497號 電話：02-6620-6620 營業時間：每日08:00-20:00
+13. 台北南港服務站 地址：台北市南港區市民大道七段396號 電話：(02) 6620-6620 營業時間：每日08:30-20:30
+14. 板橋服務站 地址：新北市板橋區板新路202號 電話：02-6620-6620 營業時間：每日08:00-20:00
 
 【花東】
 15. 花蓮國聯站 地址：花蓮縣花蓮市國聯五路212號 電話：(02) 6620-6620 營業時間：08:30-20:30
@@ -129,10 +127,6 @@ const KNOWLEDGE = `=== AVIS 艾維士 服務據點資料 ===
 國內免費：0800-600-601
 海外撥打：+886 2 6620-6620
 服務時間：24小時中英文客服`;
-
-function buildSystemPrompt() {
-  return '你是 AVIS 艾維士（台灣租車／專車司機服務公司）的內部 AI 客服助理，協助同仁查詢內部知識與作業流程。\n風格：親切專業，繁體中文為主，可夾雜英文術語，回答簡潔有重點。\n原則：優先根據知識庫回答；知識庫未涵蓋時補充一般常識但加註「AI 補充資訊，請向主管確認」；完全不確定時誠實說明。\n\n' + KNOWLEDGE;
-}
 
 function addMessage(role, text) {
   const msg = document.createElement('div');
@@ -156,17 +150,23 @@ async function sendMessage() {
   const text = inputEl.value.trim();
   if (!text || sendBtn.disabled) return;
   inputEl.value = ''; inputEl.style.height = 'auto'; sendBtn.disabled = true;
-  addMessage('user', text); chatHistory.push({ role: 'user', content: text }); showTyping();
+  addMessage('user', text);
+  chatHistory.push({ role: 'user', content: text });
+  showTyping();
   try {
     const res = await fetch(WORKER_URL, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: buildSystemPrompt(), messages: chatHistory })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: SYSTEM_PROMPT, messages: chatHistory })
     });
-    if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error?.message || 'API 錯誤'); }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
-    const reply = data.content?.[0]?.text || '抱歉，無法取得回應，請稍後再試。';
-    removeTyping(); addMessage('bot', reply); chatHistory.push({ role: 'assistant', content: reply });
-  } catch(e) { removeTyping(); addMessage('bot', '連線異常：' + (e.message || '請稍後再試')); }
+    const reply = data.content?.[0]?.text || '抱歉，無法取得回應。';
+    removeTyping(); addMessage('bot', reply);
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    removeTyping(); addMessage('bot', '連線異常：' + (e.message || '請稍後再試'));
+  }
   sendBtn.disabled = false; inputEl.focus();
 }
 
