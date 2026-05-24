@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AVIS 艾維士 轉譯系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --red:#D4002A;--red-dark:#A30020;--red-light:#FFE8EC;
+  --orange:#FF6B35;--green:#1B8C3D;--blue:#1565C0;
+  --bg:#F4F1EB;--card:#FFF;--text:#1A1A1A;--text2:#555;--text3:#999;
+  --border:#DDD8D0;--shadow:0 2px 12px rgba(0,0,0,.08);
+  --radius:12px;
+}
+html{font-size:15px;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── HEADER ── */
+.header{
+  background:linear-gradient(135deg,var(--red) 0%,var(--red-dark) 100%);
+  color:#fff;padding:0;position:sticky;top:0;z-index:100;
+  box-shadow:0 3px 16px rgba(0,0,0,.2);
+}
+.header-inner{
+  max-width:1200px;margin:0 auto;padding:16px 24px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+.header h1{font-size:1.5rem;font-weight:900;letter-spacing:2px;}
+.header h1 span{font-weight:300;font-size:.85rem;opacity:.85;margin-left:8px;}
+
+/* ── TABS ── */
+.tabs{
+  display:flex;gap:4px;background:rgba(255,255,255,.12);border-radius:8px;padding:3px;
+}
+.tab-btn{
+  padding:8px 20px;border:none;background:transparent;color:rgba(255,255,255,.7);
+  font-size:.9rem;font-weight:500;border-radius:6px;cursor:pointer;transition:.2s;
+  font-family:inherit;
+}
+.tab-btn:hover{color:#fff;background:rgba(255,255,255,.1);}
+.tab-btn.active{color:var(--red);background:#fff;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+
+/* ── MAIN ── */
+.main{max-width:1200px;margin:0 auto;padding:24px;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── CARDS ── */
+.card{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:28px;margin-bottom:20px;border:1px solid var(--border);
+}
+.card-title{
+  font-size:1.1rem;font-weight:700;margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-title .icon{font-size:1.3rem;}
+
+/* ── TEXTAREA ── */
+textarea{
+  width:100%;min-height:180px;border:2px solid var(--border);border-radius:10px;
+  padding:16px;font-family:'Noto Sans TC',monospace;font-size:.9rem;line-height:1.7;
+  resize:vertical;transition:.3s;background:#FAFAF8;
+}
+textarea:focus{outline:none;border-color:var(--red);background:#fff;box-shadow:0 0 0 3px var(--red-light);}
+textarea::placeholder{color:var(--text3);}
+
+/* ── BUTTONS ── */
+.btn{
+  padding:12px 28px;border:none;border-radius:8px;font-size:.95rem;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:.2s;display:inline-flex;align-items:center;gap:6px;
+}
+.btn-primary{background:var(--red);color:#fff;}
+.btn-primary:hover{background:var(--red-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(212,0,42,.3);}
+.btn-secondary{background:#EEE;color:var(--text);}
+.btn-secondary:hover{background:#DDD;}
+.btn-sm{padding:8px 16px;font-size:.85rem;}
+.btn-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+
+/* ── DECODE RESULT ── */
+.decode-result{margin-top:20px;}
+.decode-section{
+  background:#F9F8F5;border:1px solid var(--border);border-radius:10px;
+  padding:20px;margin-bottom:16px;
+}
+.decode-section h3{
+  font-size:.95rem;font-weight:700;color:var(--red);margin-bottom:12px;
+  padding-bottom:8px;border-bottom:2px solid var(--red-light);
+  display:flex;align-items:center;gap:6px;
+}
+.field-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.field-item{
+  display:flex;gap:8px;align-items:flex-start;padding:10px 14px;
+  background:#fff;border-radius:8px;border:1px solid #EEE;
+}
+.field-label{
+  font-size:.8rem;color:var(--text2);white-space:nowrap;min-width:80px;
+  font-weight:500;padding-top:2px;
+}
+.field-value{
+  font-size:.95rem;font-weight:600;color:var(--text);word-break:break-all;
+  flex:1;
+}
+.field-value.highlight{color:var(--red);}
+.field-value .copy-btn{
+  display:inline-block;margin-left:6px;font-size:.7rem;color:var(--blue);
+  cursor:pointer;opacity:.6;transition:.2s;vertical-align:middle;
+}
+.field-value .copy-btn:hover{opacity:1;}
+
+/* ── ALERT BOXES ── */
+.alert{
+  padding:14px 18px;border-radius:8px;font-size:.88rem;line-height:1.6;
+  margin-top:12px;display:flex;align-items:flex-start;gap:8px;
+}
+.alert-warn{background:#FFF3E0;border:1px solid #FFB74D;color:#E65100;}
+.alert-info{background:#E3F2FD;border:1px solid #64B5F6;color:#1565C0;}
+.alert-ok{background:#E8F5E9;border:1px solid #81C784;color:#2E7D32;}
+
+/* ── GLOSSARY ── */
+.search-box{
+  display:flex;gap:8px;margin-bottom:20px;
+}
+.search-input{
+  flex:1;padding:12px 16px;border:2px solid var(--border);border-radius:8px;
+  font-size:.95rem;font-family:inherit;
+}
+.search-input:focus{outline:none;border-color:var(--red);}
+.glossary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;}
+.glossary-card{
+  background:#F9F8F5;border:1px solid var(--border);border-radius:10px;
+  padding:16px;transition:.2s;
+}
+.glossary-card:hover{border-color:var(--red);box-shadow:0 2px 8px rgba(212,0,42,.1);}
+.glossary-code{font-size:1.05rem;font-weight:700;color:var(--red);margin-bottom:4px;}
+.glossary-meaning{font-size:.9rem;color:var(--text);line-height:1.6;}
+.glossary-tag{
+  display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;
+  font-weight:600;margin-top:6px;
+}
+.tag-flight{background:#E3F2FD;color:#1565C0;}
+.tag-zone{background:#E8F5E9;color:#2E7D32;}
+.tag-group{background:#FFF3E0;color:#E65100;}
+.tag-system{background:#F3E5F5;color:#7B1FA2;}
+.tag-status{background:#ECEFF1;color:#455A64;}
+.glossary-cat-title{
+  font-size:1rem;font-weight:700;padding:10px 0 8px;margin-top:16px;
+  border-bottom:2px solid var(--red-light);color:var(--red);
+}
+.glossary-cat-title:first-child{margin-top:0;}
+
+/* ── LOADING ── */
+.loading{display:none;align-items:center;gap:8px;padding:12px;color:var(--text2);font-size:.9rem;}
+.loading.show{display:flex;}
+.spinner{
+  width:20px;height:20px;border:3px solid var(--border);border-top-color:var(--red);
+  border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .header-inner{flex-direction:column;align-items:flex-start;}
+  .tabs{width:100%;overflow-x:auto;}
+  .tab-btn{font-size:.82rem;padding:8px 14px;white-space:nowrap;}
+  .main{padding:16px;}
+  .card{padding:20px;}
+  .field-grid{grid-template-columns:1fr;}
+}
+
+/* ── COPY TOAST ── */
+.toast{
+  position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);
+  background:#333;color:#fff;padding:10px 24px;border-radius:8px;
+  font-size:.88rem;font-weight:500;opacity:0;transition:.3s;z-index:999;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <h1>AVIS 艾維士<span>轉譯系統</span></h1>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('decode')">✈️ 信件解碼</button>
+      <button class="tab-btn" onclick="switchTab('glossary')">📖 術語查詢</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ═══ TAB 1: DECODE ═══ -->
+  <div class="panel active" id="panel-decode">
+    <div class="card">
+      <div class="card-title"><span class="icon">✈️</span> 阿聯酋信件解碼</div>
+      <p style="color:var(--text2);font-size:.88rem;margin-bottom:14px;">
+        貼上阿聯酋（EK）的訂單原文，自動拆解成 AST 建單需要的欄位格式。
+      </p>
+      <textarea id="decode-input" placeholder="把阿聯酋信件內容貼在這裡...
+
+範例：
+R/KICFFS  20260523106
+1. 1MII/TSWENHERMR
+1.EK 367 O 23MAY TPEDXB HK1  2305-6 0435-7
+2.AUX SUR EK HK1  TPE 23MAY /CDD/EK0367/23MAYTPEDXB/TPE.P/U 193
+  0 ADDRESS NO. 25, ZHUANGYI ST, TAOYUAN DISTRICT *TCP IMRIYN*
+  *4 BAGS* *REQUEST VAN* TEL 8860913005192"></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="decodeMail()">🔍 開始解碼</button>
+        <button class="btn btn-secondary" onclick="clearDecode()">清除</button>
+        <button class="btn btn-secondary" onclick="loadSample()">載入範例</button>
+      </div>
+    </div>
+
+    <div id="decode-result" class="decode-result"></div>
+  </div>
+
+  <!-- ═══ TAB 2: GLOSSARY ═══ -->
+  <div class="panel" id="panel-glossary">
+    <div class="card">
+      <div class="card-title"><span class="icon">📖</span> 術語 / 代碼查詢</div>
+      <div class="search-box">
+        <input class="search-input" id="glossary-search" placeholder="搜尋代碼或關鍵字，例如：EK367、Zone、K組..." oninput="filterGlossary()">
+      </div>
+      <div id="glossary-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  GLOSSARY DATA
+// ═══════════════════════════════════════════════════════════
+const GLOSSARY = [
+  // ── 航班代碼 ──
+  { cat:'航班代碼', code:'EK366', meaning:'阿聯酋航空 接機航班（落地時間 03:15）', tag:'flight' },
+  { cat:'航班代碼', code:'EK386', meaning:'阿聯酋航空 接機航班（落地時間 08:40）', tag:'flight' },
+  { cat:'航班代碼', code:'EK367', meaning:'阿聯酋航空 送機航班（起飛時間 01:00）⚠️ 訂單上車時間應為 D-1', tag:'flight' },
+  { cat:'航班代碼', code:'EK387', meaning:'阿聯酋航空 送機航班（起飛時間 00:45）⚠️ 因為 0045 起飛，訂單上車時間應為 D-1', tag:'flight' },
+  { cat:'航班代碼', code:'1K', meaning:'阿聯酋航空（EK）的 IATA 代碼，建單時「訂車人名稱」固定填 1K', tag:'flight' },
+  { cat:'航班代碼', code:'TPE', meaning:'桃園國際機場（Taiwan Taoyuan International Airport）', tag:'flight' },
+  { cat:'航班代碼', code:'DXB', meaning:'杜拜國際機場（Dubai International Airport）', tag:'flight' },
+  { cat:'航班代碼', code:'HK1', meaning:'已確認 1 位旅客（HK = 已確認，數字 = 人數）', tag:'flight' },
+  { cat:'航班代碼', code:'HK2', meaning:'已確認 2 位旅客', tag:'flight' },
+
+  // ── 訂單狀態碼 ──
+  { cat:'訂單狀態碼', code:'PNR', meaning:'訂位代號（Passenger Name Record），R/ 後面的字母串', tag:'status' },
+  { cat:'訂單狀態碼', code:'AUX SUR', meaning:'附加服務（Auxiliary Surface），代表地面交通接送服務', tag:'status' },
+  { cat:'訂單狀態碼', code:'P/U', meaning:'Pick Up 接客，後面的數字是上車時間', tag:'status' },
+  { cat:'訂單狀態碼', code:'TCP', meaning:'同一台車多位乘客（機票分開買），不用新增乘客，但人數和行李數要加', tag:'status' },
+  { cat:'車組代碼', code:'O組', meaning:'O 組車組（從航班行 EK XXX 後面的字母判斷）', tag:'group' },
+  { cat:'訂單狀態碼', code:'CDD', meaning:'Chauffeur Drive Departure（代駕送機服務）', tag:'status' },
+  { cat:'訂單狀態碼', code:'MR', meaning:'先生（Mr.），出現在姓名尾端不需要填入', tag:'status' },
+  { cat:'訂單狀態碼', code:'MS / MRS', meaning:'女士，出現在姓名尾端不需要填入', tag:'status' },
+  { cat:'訂單狀態碼', code:'REQUEST VAN', meaning:'客戶要求派廂型車（通常行李多或人數多）', tag:'status' },
+
+  // ── Zone 區域 ──
+  { cat:'Zone 區域', code:'Zone 0', meaning:'桃園機場周邊（凱悅、諾富特、高鐵）— 免費', tag:'zone' },
+  { cat:'Zone 1', code:'Zone 1', meaning:'北北基桃竹（新竹以北）— 免費', tag:'zone' },
+  { cat:'Zone 區域', code:'Zone 2', meaning:'苗栗、台中、彰化、南投 — 收費（加購）', tag:'zone' },
+  { cat:'Zone 區域', code:'Zone 3', meaning:'雲林、嘉義、台南、高雄 — 收費（加購）', tag:'zone' },
+  { cat:'Zone 區域', code:'Zone 4', meaning:'屏東、花蓮、台東 — 收費（加購）', tag:'zone' },
+  { cat:'Zone 區域', code:'Novotel & THSR', meaning:'諾富特飯店 & 台灣高鐵（屬於 Zone 0）', tag:'zone' },
+
+  // ── 車組代碼 ──
+  { cat:'車組代碼', code:'H組', meaning:'H 組客戶車組（額外等候費 450/小時）', tag:'group' },
+  { cat:'車組代碼', code:'L組', meaning:'L 組客戶車組（額外等候費 650/小時）— Sedan 轎車', tag:'group' },
+  { cat:'車組代碼', code:'K組', meaning:'K 組客戶車組（額外等候費 650/小時）— People over / MB-V Class', tag:'group' },
+  { cat:'車組代碼', code:'P組', meaning:'P 組客戶車組（額外等候費 850/小時）', tag:'group' },
+  { cat:'車組代碼', code:'V組', meaning:'V 組客戶車組（額外等候費 750/小時）', tag:'group' },
+  { cat:'車組代碼', code:'W組', meaning:'W 組客戶車組（額外等候費 1,100/小時）', tag:'group' },
+
+  // ── 建單固定欄位 ──
+  { cat:'AST 建單', code:'訂車人名稱', meaning:'阿聯酋訂單固定填「1K」', tag:'system' },
+  { cat:'AST 建單', code:'服務類型', meaning:'阿聯酋訂單固定選「接機」', tag:'system' },
+  { cat:'AST 建單', code:'客戶來源', meaning:'阿聯酋訂單固定選「信件」', tag:'system' },
+  { cat:'AST 建單', code:'艙等', meaning:'F = 頭等艙，其餘 = 商務艙', tag:'system' },
+  { cat:'AST 建單', code:'舉牌', meaning:'預設有，不要刪除', tag:'system' },
+  { cat:'AST 建單', code:'新增完成', meaning:'存檔即完成，不需傳送 API', tag:'system' },
+  { cat:'AST 建單', code:'多台車處理', meaning:'同 PNR 每台各建一筆，PNR 後加 -1、-2 區分', tag:'system' },
+  { cat:'AST 建單', code:'修改訂單', meaning:'修改訂單需要「儲存 + 傳送 API」兩步，新增只要存檔', tag:'system' },
+];
+
+// ═══════════════════════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════════════════════
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', b.getAttribute('onclick').includes(name));
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  DECODE LOGIC
+// ═══════════════════════════════════════════════════════════
+function loadSample() {
+  document.getElementById('decode-input').value =
+`R/KICFFS  20260523106
+1. 1MII/TSWENHERMR
+1.EK 367 O 23MAY TPEDXB HK1  2305-6 0435-7
+2.AUX SUR EK HK1  TPE 23MAY /CDD/EK0367/23MAYTPEDXB/TPE.P/U 193
+  0 ADDRESS NO. 25, ZHUANGYI ST, TAOYUAN DISTRICT *TCP IMRIYN*
+  *4 BAGS* *REQUEST VAN* TEL 8860913005192`;
+}
+
+function clearDecode() {
+  document.getElementById('decode-input').value = '';
+  document.getElementById('decode-result').innerHTML = '';
+}
+
+async function decodeMail() {
+  const raw = document.getElementById('decode-input').value.trim();
+  if (!raw) { showToast('請先貼上信件內容！'); return; }
+
+  const result = parseEKMail(raw);
+
+  // 先顯示初步結果（地址顯示翻譯中）
+  if (result.address) {
+    result.addressCN = '⏳ 地址翻譯中...';
+    renderDecodeResult(result, raw);
+
+    // 呼叫 API 翻譯地址
+    const translated = await translateAddressAPI(result.address);
+    result.addressCN = translated || '';
+  }
+
+  renderDecodeResult(result, raw);
+}
+
+function parseEKMail(text) {
+  const r = {
+    pnr:'', passengers:[], flight:'', flightType:'', flightTime:'',
+    date:'', route:'', carCount:1, address:'', addressCN:'', phone:'', email:'',
+    bags:0, requestVan:false, tcp:[], puTime:'', cabin:'',
+    routeCode:'', paxCount:1, warnings:[]
+  };
+
+  const lines = text.split('\n').map(l => l.trim());
+  const full = text.replace(/\n/g, ' ');
+
+  // PNR - 可能有多個，用分號連接
+  const pnrAll = [];
+  const pnrRegex = /R\/([A-Z]+)/g;
+  let pnrMatch;
+  while ((pnrMatch = pnrRegex.exec(text)) !== null) {
+    if (!pnrAll.includes(pnrMatch[1])) pnrAll.push(pnrMatch[1]);
+  }
+  r.pnr = pnrAll.join('；');
+
+  // Passengers - 保留原始 LAST/FIRST 格式（去掉稱謂）
+  // 格式：1. 1PAN/PAOYAOMR 0920240409  或  2. 1PAN/YINUNGMISS
+  // 稱謂可能是 MR, MRS, MS, MISS, MSTR, CHD, INF
+  for (const line of lines) {
+    // 匹配：數字. 數字 姓/名+稱謂 [可選電話或其他]
+    const lineMatch = line.match(/^\d+\.\s*\d*([A-Z]+)\/([A-Z]+?)(?:MISS|MRS|MR|MS|MSTR|CHD|INF)(?:\s|$)/i);
+    if (lineMatch) {
+      const pax = { last: lineMatch[1], first: lineMatch[2] };
+      // 檢查這行有沒有電話（在稱謂後面）
+      const phoneInLine = line.match(/(?:MISS|MRS|MR|MS|MSTR|CHD|INF)\s+(\d{8,})/i);
+      if (phoneInLine && !r.phone) {
+        let tel = phoneInLine[1];
+        if (tel.startsWith('886')) tel = '0' + tel.slice(3);
+        r.phone = tel;
+      }
+      r.passengers.push(pax);
+    }
+  }
+  // Fallback: 在合併文本中找
+  if (r.passengers.length === 0) {
+    const paxRegex = /\d([A-Z]{2,})\/([A-Z]+?)(?:MISS|MRS|MR|MS)\b/gi;
+    let pm;
+    while ((pm = paxRegex.exec(full)) !== null) {
+      r.passengers.push({ last: pm[1], first: pm[2] });
+    }
+  }
+
+  // Flight + 車組代碼
+  // 格式：EK 367 O 23MAY → EK367 是航班，O 是車組代碼
+  const flightLineM = full.match(/EK\s*(\d{3})\s+([A-Z])\s+\d{1,2}(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)/i);
+  if (flightLineM) {
+    r.flight = 'EK' + flightLineM[1];
+    r.carGroup = flightLineM[2] + '組';
+    const fn = parseInt(flightLineM[1]);
+    if (fn === 366 || fn === 386) {
+      r.flightType = '接機';
+      if (fn === 366) r.flightTime = '落地 03:15';
+      if (fn === 386) r.flightTime = '落地 08:40';
+    } else if (fn === 367 || fn === 387) {
+      r.flightType = '送機';
+      if (fn === 367) r.flightTime = '起飛 01:00';
+      if (fn === 387) r.flightTime = '起飛 00:45';
+      r.warnings.push('送機航班！上車時間可能需要設為 D-1（前一天）');
+    }
+  } else {
+    // fallback: 只抓航班號
+    const flightM2 = full.match(/EK\s*(\d{3})/);
+    if (flightM2) {
+      r.flight = 'EK' + flightM2[1];
+      const fn = parseInt(flightM2[1]);
+      if (fn === 366 || fn === 386) {
+        r.flightType = '接機';
+        if (fn === 366) r.flightTime = '落地 03:15';
+        if (fn === 386) r.flightTime = '落地 08:40';
+      } else if (fn === 367 || fn === 387) {
+        r.flightType = '送機';
+        if (fn === 367) r.flightTime = '起飛 01:00';
+        if (fn === 387) r.flightTime = '起飛 00:45';
+        r.warnings.push('送機航班！上車時間可能需要設為 D-1（前一天）');
+      }
+    }
+  }
+
+  // Date - 只匹配真正的日期格式（數字+月份英文縮寫）
+  const monthNames = 'JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC';
+  const dateM = full.match(new RegExp('(\\d{1,2})(' + monthNames + ')', 'i'));
+  if (dateM) {
+    const months = {JAN:'01',FEB:'02',MAR:'03',APR:'04',MAY:'05',JUN:'06',
+                    JUL:'07',AUG:'08',SEP:'09',OCT:'10',NOV:'11',DEC:'12'};
+    const mon = months[dateM[2].toUpperCase()];
+    if (mon) {
+      const year = new Date().getFullYear();
+      r.date = year + '/' + mon + '/' + dateM[1].padStart(2,'0');
+    }
+  }
+
+  // Route
+  const routeM = full.match(/(TPE|DXB)([A-Z]{3})/);
+  if (routeM) {
+    r.route = routeM[1] + ' → ' + routeM[2];
+  }
+
+  // Departure/arrival times
+  const timeM = full.match(/(\d{4})-\d\s+(\d{4})-\d/);
+  if (timeM) {
+    r.flightTime += ` (${timeM[1].slice(0,2)}:${timeM[1].slice(2)} → ${timeM[2].slice(0,2)}:${timeM[2].slice(2)})`;
+  }
+
+  // Car count (AUX ... HK)
+  const carM = full.match(/AUX\s+SUR\s+EK\s+HK(\d+)/);
+  if (carM) r.carCount = parseInt(carM[1]);
+
+  // P/U time - 支援多種格式
+  // P/U 1930, P/U1930, PU 1930, P/U 193, .P/U 1930
+  // 也嘗試跨行：P/U 可能在一行末尾，數字在下一行開頭
+  let puMatch = full.match(/P\/U\s*(\d{2,4})/i) || full.match(/PU\s+(\d{2,4})/i);
+
+  // 如果合併文本沒抓到，試試逐行找 P/U 再從下一行找數字
+  if (!puMatch) {
+    for (let i = 0; i < lines.length; i++) {
+      if (/P\/U\s*$/i.test(lines[i]) && i + 1 < lines.length) {
+        const nextLineNum = lines[i+1].match(/^\s*(\d{2,4})/);
+        if (nextLineNum) {
+          puMatch = [null, nextLineNum[1]];
+          break;
+        }
+      }
+      // P/U 在行中間但數字在同一行
+      const inlineMatch = lines[i].match(/P\/U\s*(\d{2,4})/i);
+      if (inlineMatch) {
+        puMatch = inlineMatch;
+        break;
+      }
+    }
+  }
+
+  if (puMatch && puMatch[1]) {
+    let t = puMatch[1];
+    if (t.length > 4) t = t.slice(0, 4);
+    if (t.length === 4) {
+      r.puTime = t.slice(0,2) + ':' + t.slice(2);
+    } else if (t.length === 3) {
+      const lastDigit = parseInt(t.slice(-1));
+      const hourPart = t.slice(0, -1);
+      r.puTime = hourPart.padStart(2,'0') + ':' + (lastDigit * 10).toString().padStart(2,'0');
+    } else if (t.length === 2) {
+      r.puTime = t + ':00';
+    }
+  }
+
+  // Address - 支援多種格式
+  // 格式1: ADDRESS NO. 25, ZHUANGYI ST, TAOYUAN DISTRICT
+  // 格式2: TPE.NO 6 SEC 1 GAOTIE N RD ZHONGLI DIST TAOYUAN
+  const addrM = full.match(/ADDRESS\s+(.*?)(?:\*|TEL|$)/i);
+  if (addrM) {
+    r.address = addrM[1].replace(/\*.*/, '').trim();
+  }
+  // 如果沒有 ADDRESS 關鍵字，嘗試從 TPE. 後面抓地址
+  if (!r.address) {
+    const tpeAddrM = full.match(/TPE\.\s*(NO\.?\s*\d+[^*]*?)(?:\*|TEL|$)/i);
+    if (tpeAddrM) {
+      r.address = tpeAddrM[1].trim();
+    }
+  }
+  // 清理地址中的 TCP 和其他標記
+  if (r.address) {
+    r.address = r.address.replace(/\*TCP\s+[A-Z]+\*/gi, '').replace(/\*\d+\s*BAGS?\*/gi, '').replace(/\*REQUEST\s+VAN\*/gi, '').replace(/\*/g, '').trim();
+  }
+
+  // 英文地址 - 清理前綴，保留原文
+  r.addressCN = '';
+  if (r.address) {
+    r.address = cleanAddress(r.address);
+  }
+
+  // Phone
+  const telM = full.match(/TEL\s*(\d+)/);
+  if (telM) {
+    let tel = telM[1];
+    if (tel.startsWith('886')) {
+      tel = '0' + tel.slice(3);
+    }
+    r.phone = tel;
+  }
+
+  // Bags - 支援多種格式：*4 BAGS*, 4 PCS LUGGAGE, 4BAGS 等
+  const bagM = full.match(/\*?\s*(\d+)\s*(?:BAGS?|PCS?\s*(?:LUGGAGE)?)\s*\*?/i);
+  if (bagM) r.bags = parseInt(bagM[1]);
+
+  // Request Van
+  if (/REQUEST\s*VAN/i.test(full)) r.requestVan = true;
+
+  // TCP - 有 TCP 代表多一位乘客，TCP 後面的代碼是另一個 PNR
+  const tcpM = full.match(/TCP\s+([A-Z]+)/g);
+  if (tcpM) {
+    tcpM.forEach(m => {
+      const name = m.replace(/TCP\s+/, '');
+      r.tcp.push(name);
+      // 把 TCP 的 PNR 也合併到主 PNR
+      if (!pnrAll.includes(name)) pnrAll.push(name);
+    });
+    r.pnr = pnrAll.join('；');
+    r.warnings.push('有 TCP 代碼：有人要搭同一台車但機票分開買。不用新增乘客，但人數和行李數要加上去！');
+  }
+
+  // 乘客人數 = 解析出的乘客數 + TCP 人數（如果 TCP 乘客沒在 passengers 裡）
+  r.paxCount = Math.max(r.passengers.length, 1) + r.tcp.length;
+
+  // Email (SR ... / pattern)
+  const emailM = full.match(/SR\s+.*?HK\d+\/([\w.]+)\/([\w.]+)/);
+  if (emailM) {
+    r.email = emailM[1] + '@' + emailM[2];
+  } else {
+    r.email = 'no@mail.com';
+  }
+
+  // Cabin class
+  if (/\bF\b/.test(full.match(/HK\d+\s+(\w)/)?.[1] || '')) {
+    r.cabin = '頭等艙';
+  } else {
+    r.cabin = '商務艙';
+  }
+
+  // 車組 - 已從航班行自動抓取（如 EK 367 O → O組）
+  // 如果沒抓到，預設為空讓同仁手動填
+  if (!r.carGroup) r.carGroup = '⚠️ 未偵測到，請手動確認';
+
+  // 路線編號 - 根據地址判斷 Zone，顯示為簡潔格式如 1,Zone1
+  const addrLower = (r.address + ' ' + r.addressCN).toLowerCase();
+  const zoneMap = [
+    { route:'0,Zone0', keywords:['novotel','thsr','高鐵','諾富特','凱悅','airport'] },
+    { route:'1,Zone1', keywords:['taipei','new taipei','keelung','taoyuan','hsinchu','桃園','台北','新北','基隆','新竹'] },
+    { route:'2,Zone2', keywords:['miaoli','taichung','changhua','nantou','苗栗','台中','彰化','南投'] },
+    { route:'3,Zone3', keywords:['yunlin','chiayi','tainan','kaohsiung','雲林','嘉義','台南','高雄'] },
+    { route:'4,Zone4', keywords:['pingtung','hualien','taitung','屏東','花蓮','台東'] },
+  ];
+  for (const z of zoneMap) {
+    if (z.keywords.some(k => addrLower.includes(k))) {
+      r.routeCode = z.route;
+      break;
+    }
+  }
+
+  // Multi-car warning
+  if (r.carCount > 1) {
+    r.warnings.push(`多台車（${r.carCount} 台）：同 PNR 每台各建一筆，PNR 後加 -1、-2 區分`);
+  }
+
+  return r;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ADDRESS - 用 Claude API 翻譯英文地址為中文
+// ═══════════════════════════════════════════════════════════
+function cleanAddress(addr) {
+  if (!addr) return '';
+  return addr.replace(/^[A-Z]{3}\.\s*/g, '').trim();
+}
+
+async function translateAddressAPI(addr) {
+  if (!addr) return '';
+  const clean = cleanAddress(addr);
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 200,
+        messages: [{
+          role: 'user',
+          content: '請將以下英文台灣地址翻譯成中文地址，只回覆中文地址不要加任何說明。例如 NO 6 SEC 1 GAOTIE N RD ZHONGLI DIST TAOYUAN 應翻譯為 桃園市中壢區高鐵北路一段6號。地址：' + clean
+        }]
+      })
+    });
+    if (resp.ok) {
+      const data = await resp.json();
+      const text = data.content?.[0]?.text?.trim();
+      if (text && /[\u4e00-\u9fff]/.test(text)) return text;
+    }
+  } catch (e) {
+    console.log('API翻譯失敗:', e.message);
+  }
+  return '';
+}
+
+function renderDecodeResult(r, raw) {
+  const container = document.getElementById('decode-result');
+
+  // 乘客姓名：保留 LAST/FIRST 格式
+  const paxDisplay = r.passengers.map(p => p.last + '/' + p.first).join('、') || '（未偵測到）';
+
+  // 地址顯示
+  let addrEN = r.address ? cleanAddress(r.address) : '';
+  let addrCN = r.addressCN || '';
+  let addrDisplay = '—';
+
+  // Google 搜尋 + Maps 連結（備用）
+  const googleQuery = addrEN ? encodeURIComponent(addrEN + ' 台灣 地址') : '';
+  const mapQuery = addrEN ? encodeURIComponent(addrEN + ', Taiwan') : '';
+  const buttons = addrEN ? 
+    `<br><a href="https://www.google.com/search?q=${googleQuery}" target="_blank" style="display:inline-block;margin-top:4px;padding:4px 10px;background:var(--blue);color:#fff;border-radius:5px;font-size:.75rem;text-decoration:none;font-weight:600;">🔍 Google 搜尋</a>` +
+    `<a href="https://www.google.com/maps/search/${mapQuery}" target="_blank" style="display:inline-block;margin-top:4px;margin-left:4px;padding:4px 10px;background:var(--green);color:#fff;border-radius:5px;font-size:.75rem;text-decoration:none;font-weight:600;">📍 Google Maps</a>` 
+    : '';
+
+  if (addrCN && addrCN !== '⏳ 地址翻譯中...') {
+    // API 翻譯成功：顯示中文 + 原文 + 按鈕
+    addrDisplay = addrCN + '<br><span style="font-size:.8rem;color:var(--text2);">原文：' + addrEN + '</span>' + buttons;
+  } else if (addrCN === '⏳ 地址翻譯中...') {
+    addrDisplay = '⏳ 地址翻譯中...' + '<br><span style="font-size:.8rem;color:var(--text2);">' + addrEN + '</span>';
+  } else {
+    // API 翻譯失敗：顯示英文 + 按鈕
+    addrDisplay = addrEN + buttons;
+  }
+
+  // 判斷上下車地點（送機：地址→機場；接機：機場→地址）
+  let pickupPlace, dropoffPlace, pickupExtra, dropoffExtra;
+  if (r.flightType === '送機') {
+    pickupPlace = addrCN && addrCN !== '⏳ 地址翻譯中...' ? addrCN : addrEN || '—';
+    dropoffPlace = '桃園國際機場';
+    pickupExtra = buttons;
+    dropoffExtra = '';
+  } else {
+    pickupPlace = '桃園國際機場';
+    dropoffPlace = addrCN && addrCN !== '⏳ 地址翻譯中...' ? addrCN : addrEN || '—';
+    pickupExtra = '';
+    dropoffExtra = buttons;
+  }
+
+  let html = '';
+
+  // ── Warnings ──
+  if (r.warnings.length > 0) {
+    html += r.warnings.map(w => `<div class="alert alert-warn">⚠️ ${w}</div>`).join('');
+  }
+
+  // ── 統一拆解結果 ──
+  html += `
+  <div class="decode-section">
+    <h3>📨 信件拆解結果</h3>
+
+    <div style="font-size:.85rem;font-weight:700;color:var(--red);margin:4px 0 8px;">▌ 乘客資訊</div>
+    <div class="field-grid">
+      ${field('乘客姓名', paxDisplay, true)}
+      ${field('乘客電話', r.phone || '—', true)}
+      ${field('乘客 Email', r.email, true)}
+      ${field('乘客人數', r.paxCount + ' 人' + (r.tcp.length > 0 ? '（含 TCP 共乘）' : ''))}
+    </div>
+
+    <div style="font-size:.85rem;font-weight:700;color:var(--red);margin:18px 0 8px;">▌ 訂單基本資訊</div>
+    <div class="field-grid">
+      ${field('PNR 訂位代號', r.pnr || '—', true)}
+      ${field('客戶名稱', paxDisplay, true)}
+      ${field('航班編號', r.flight + (r.flightType ? ` (${r.flightType})` : ''), true)}
+      ${field('航班時間', r.flightTime || '—')}
+      ${field('日期', r.date || '—')}
+      ${field('服務項目', r.flightType || '接機', true)}
+      ${field('客戶來源', '信件', true)}
+      ${field('艙等', r.cabin)}
+      ${field('車組', r.carGroup || 'K組', true)}
+    </div>
+
+    <div style="font-size:.85rem;font-weight:700;color:var(--red);margin:18px 0 8px;">▌ 用車資訊</div>
+    <div class="field-grid">
+      ${fieldWithExtra('上車地點', pickupPlace, true, pickupExtra)}
+      ${fieldWithExtra('下車地點', dropoffPlace, true, dropoffExtra)}
+      ${field('上車時間', r.puTime ? r.date + ' ' + r.puTime : r.date || '—', true)}
+      ${field('大行李數', r.bags + ' 件')}
+      ${field('要求車型', r.requestVan ? '🚐 廂型車（VAN）' : '一般轎車')}
+      ${field('台車數量', r.carCount + ' 台')}
+      ${field('路線編號', r.routeCode || '⚠️ 無法自動判斷，請手動確認', true)}
+    </div>
+
+    <div style="font-size:.85rem;font-weight:700;color:var(--red);margin:18px 0 8px;">▌ 固定設定提醒</div>
+    <div class="field-grid">
+      ${field('舉牌', '預設有，不要刪除')}
+      ${field('完成方式', '存檔即完成，不需傳送 API')}
+    </div>
+  </div>`;
+
+  // ── Tips ──
+  html += `
+  <div class="alert alert-info">
+    💡 <strong>小提醒：</strong>
+    建單後請記得確認：① 地址複製到 Google Maps 確認正確 ② 上車時間是否需要 D-1 ③ 多台車記得每台各建一筆（PNR 後加 -1、-2）
+  </div>`;
+
+  container.innerHTML = html;
+  container.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function field(label, value, copyable) {
+  const safeValue = (value || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  const copyBtn = copyable && value && value !== '—'
+    ? `<span class="copy-btn" onclick="copyText('${safeValue}')">📋複製</span>`
+    : '';
+  const cls = copyable ? ' highlight' : '';
+  return `<div class="field-item">
+    <span class="field-label">${label}</span>
+    <span class="field-value${cls}">${value}${copyBtn}</span>
+  </div>`;
+}
+
+function fieldWithExtra(label, value, copyable, extraHtml) {
+  const safeValue = (value || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  const copyBtn = copyable && value && value !== '—'
+    ? `<span class="copy-btn" onclick="copyText('${safeValue}')">📋複製</span>`
+    : '';
+  const cls = copyable ? ' highlight' : '';
+  return `<div class="field-item">
+    <span class="field-label">${label}</span>
+    <span class="field-value${cls}">${value}${copyBtn}${extraHtml || ''}</span>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GLOSSARY
+// ═══════════════════════════════════════════════════════════
+function renderGlossary(items) {
+  const list = document.getElementById('glossary-list');
+  const cats = [...new Set(items.map(g => g.cat))];
+  const tagClass = { flight:'tag-flight', zone:'tag-zone', group:'tag-group', system:'tag-system', status:'tag-status' };
+  const tagLabel = { flight:'航班', zone:'區域', group:'車組', system:'系統', status:'狀態碼' };
+
+  list.innerHTML = cats.map(cat => {
+    const catItems = items.filter(g => g.cat === cat);
+    return `
+      <div class="glossary-cat-title">${cat}</div>
+      <div class="glossary-grid">
+        ${catItems.map(g => `
+          <div class="glossary-card">
+            <div class="glossary-code">${g.code}</div>
+            <div class="glossary-meaning">${g.meaning}</div>
+            <span class="glossary-tag ${tagClass[g.tag] || 'tag-status'}">${tagLabel[g.tag] || g.tag}</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+function filterGlossary() {
+  const q = document.getElementById('glossary-search').value.trim().toLowerCase();
+  if (!q) { renderGlossary(GLOSSARY); return; }
+  const filtered = GLOSSARY.filter(g =>
+    g.code.toLowerCase().includes(q) ||
+    g.meaning.toLowerCase().includes(q) ||
+    g.cat.toLowerCase().includes(q)
+  );
+  renderGlossary(filtered);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  UTILITIES
+// ═══════════════════════════════════════════════════════════
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('✅ 已複製！'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════
+renderGlossary(GLOSSARY);
+</script>
+</body>
+</html>
